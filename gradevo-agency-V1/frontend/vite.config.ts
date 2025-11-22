@@ -20,6 +20,22 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist', // ❗ This is required for Render static hosting
+      chunkSizeWarningLimit: 1600,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('three') || id.includes('@react-three')) {
+                return 'three-vendor';
+              }
+              if (id.includes('gsap') || id.includes('framer-motion')) {
+                return 'animation-vendor';
+              }
+              return 'vendor';
+            }
+          }
+        }
+      }
     }
   };
 });
