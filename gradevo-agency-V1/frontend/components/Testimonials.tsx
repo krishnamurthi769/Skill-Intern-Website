@@ -14,7 +14,14 @@ const Testimonials: React.FC = () => {
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/content/testimonials`)
       .then(res => res.json())
-      .then(data => setTestimonials(data))
+      .then(data => {
+        if (Array.isArray(data)) {
+          setTestimonials(data);
+        } else {
+          console.error('Testimonials data is not an array:', data);
+          setTestimonials([]);
+        }
+      })
       .catch(err => console.error('Failed to fetch testimonials:', err));
   }, []);
 

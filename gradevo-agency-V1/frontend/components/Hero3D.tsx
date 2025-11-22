@@ -123,17 +123,17 @@ const CreativitySymbol = () => {
 const Hero3D: React.FC = () => {
   return (
     <div className="absolute inset-0 z-0">
-      <Canvas dpr={[1, 2]} gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping }}>
+      <Canvas dpr={[1, window.innerWidth < 768 ? 1.5 : 2]} gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping }}>
         <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={35} />
 
         {/* Cinematic Lighting */}
         <ambientLight intensity={0.4} color={BRAND_COLORS.navy} />
-        <spotLight position={[10, 10, 10]} angle={0.5} penumbra={1} intensity={10} color="#ffffff" castShadow />
+        <spotLight position={[10, 10, 10]} angle={0.5} penumbra={1} intensity={10} color="#ffffff" castShadow={window.innerWidth > 768} />
         <pointLight position={[-10, -5, -5]} intensity={5} color={BRAND_COLORS.blue} />
         <pointLight position={[5, 5, 5]} intensity={2} color={BRAND_COLORS.red} />
 
         {/* Background Environment */}
-        <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+        <Stars radius={100} depth={50} count={window.innerWidth < 768 ? 2000 : 5000} factor={4} saturation={0} fade speed={1} />
         <Environment preset="city" blur={0.6} />
 
         {/* Main Assembly */}
@@ -143,7 +143,7 @@ const Hero3D: React.FC = () => {
           </group>
         </Float>
 
-        <ContactShadows resolution={1024} scale={40} blur={2.5} opacity={0.3} far={10} color="#000000" />
+        <ContactShadows resolution={512} scale={40} blur={2.5} opacity={0.3} far={10} color="#000000" frames={1} />
       </Canvas>
     </div>
   );

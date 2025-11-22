@@ -11,7 +11,14 @@ const Services: React.FC = () => {
   React.useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/content/services`)
       .then(res => res.json())
-      .then(data => setServices(data))
+      .then(data => {
+        if (Array.isArray(data)) {
+          setServices(data);
+        } else {
+          console.error('Services data is not an array:', data);
+          setServices([]);
+        }
+      })
       .catch(err => console.error('Failed to fetch services:', err));
   }, []);
 

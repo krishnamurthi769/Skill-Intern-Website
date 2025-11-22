@@ -12,7 +12,12 @@ const ServiceList: React.FC = () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/content/services`);
         const data = await res.json();
-        setServices(data);
+        if (Array.isArray(data)) {
+          setServices(data);
+        } else {
+          console.error('Services data is not an array:', data);
+          setServices([]);
+        }
       } catch (err) {
         console.error('Failed to fetch services', err);
       }

@@ -24,10 +24,15 @@ const Home: React.FC = () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/content/portfolio`);
         const data = await res.json();
-        const featured = data.filter((item: any) => item.is_featured);
-        setTotalFeatured(featured.length);
-        // If > 6, take 6. Else take all
-        setFeaturedWork(featured.slice(0, 6));
+        if (Array.isArray(data)) {
+          const featured = data.filter((item: any) => item.is_featured);
+          setTotalFeatured(featured.length);
+          // If > 6, take 6. Else take all
+          setFeaturedWork(featured.slice(0, 6));
+        } else {
+          console.error('Portfolio data is not an array:', data);
+          setFeaturedWork([]);
+        }
       } catch (err) {
         console.error('Failed to fetch featured work', err);
       }
