@@ -22,6 +22,9 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow loading images from uploads
 }));
 
+// Trust proxy - Required for deployment behind reverse proxies (Render, Heroku, etc.)
+app.set('trust proxy', 1);
+
 // Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
