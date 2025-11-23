@@ -11,6 +11,7 @@ const Portfolio: React.FC = () => {
   const [portfolioItems, setPortfolioItems] = React.useState<any[]>([]);
   const [activeCategory, setActiveCategory] = React.useState('All');
   const [loading, setLoading] = React.useState(true);
+  const [itemsToShow, setItemsToShow] = React.useState(6); // Show 6 items initially
 
   React.useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/content/portfolio`)
@@ -20,9 +21,21 @@ const Portfolio: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  // Reset items to show when category changes
+  React.useEffect(() => {
+    setItemsToShow(6);
+  }, [activeCategory]);
+
   const filteredItems = activeCategory === 'All'
     ? portfolioItems
     : portfolioItems.filter(item => item.category === activeCategory);
+
+  const displayedItems = filteredItems.slice(0, itemsToShow);
+  const hasMore = filteredItems.length > itemsToShow;
+
+  const handleViewMore = () => {
+    setItemsToShow(prev => prev + 6);
+  };
 
   return (
     <div className="pt-32 bg-gradevo-navy min-h-screen">
@@ -66,7 +79,7 @@ const Portfolio: React.FC = () => {
               </div>
             ))
           ) : (
-            filteredItems.map((item, index) => (
+            displayedItems.map((item, index) => (
               <div key={item.id} className={`flex flex-col md:flex-row gap-12 items-center ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
                 <div
                   className="w-full md:w-2/3 relative group cursor-none overflow-hidden rounded-2xl"
@@ -111,6 +124,18 @@ const Portfolio: React.FC = () => {
             ))
           )}
         </div>
+
+        {/* View More Button */}
+        {!loading && hasMore && (
+          <div className="mt-16 text-center">
+            <button
+              onClick={handleViewMore}
+              className="px-8 py-4 bg-gradevo-red text-white font-bold rounded-full hover:bg-gradevo-red/80 transition-colors duration-300"
+            >
+              View More Projects
+            </button>
+          </div>
+        )}
       </div>
 
       <CTABanner />

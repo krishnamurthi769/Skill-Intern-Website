@@ -21,6 +21,7 @@ const PortfolioManager: React.FC = () => {
     const [currentItem, setCurrentItem] = useState<Partial<PortfolioItem>>({});
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [itemsToShow, setItemsToShow] = useState(12); // Show 12 items initially
 
     useEffect(() => {
         fetchPortfolio();
@@ -32,6 +33,7 @@ const PortfolioManager: React.FC = () => {
         } else {
             setFilteredPortfolio(portfolio.filter(item => item.category === selectedCategory));
         }
+        setItemsToShow(12); // Reset when category changes
     }, [selectedCategory, portfolio]);
 
     const fetchPortfolio = async () => {
@@ -105,6 +107,9 @@ const PortfolioManager: React.FC = () => {
         fetchPortfolio();
     };
 
+    const displayedItems = filteredPortfolio.slice(0, itemsToShow);
+    const hasMore = filteredPortfolio.length > itemsToShow;
+
     return (
         <div>
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -132,7 +137,7 @@ const PortfolioManager: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredPortfolio.map((item) => (
+                {displayedItems.map((item) => (
                     <div key={item.id} className="bg-white p-4 rounded shadow flex flex-col h-full">
                         <div className="relative h-40 mb-4 bg-gray-100 rounded overflow-hidden">
                             {item.image && (
@@ -164,6 +169,18 @@ const PortfolioManager: React.FC = () => {
                     </div>
                 ))}
             </div>
+
+            {/* View More Button */}
+            {hasMore && (
+                <div className="mt-8 text-center">
+                    <button
+                        onClick={() => setItemsToShow(prev => prev + 12)}
+                        className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg font-medium transition-colors"
+                    >
+                        View More ({filteredPortfolio.length - itemsToShow} remaining)
+                    </button>
+                </div>
+            )}
 
             {isEditing && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
