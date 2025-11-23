@@ -74,6 +74,8 @@ const Portfolio: React.FC = () => {
                   <img
                     src={item.image.startsWith('http') ? item.image : `${import.meta.env.VITE_API_URL}${item.image}`}
                     alt={item.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full aspect-video object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradevo-blue/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-overlay" />

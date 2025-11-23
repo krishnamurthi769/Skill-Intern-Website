@@ -67,6 +67,8 @@ const Testimonials: React.FC = () => {
                   <img
                     src={item.image_url.startsWith('http') ? item.image_url : `${import.meta.env.VITE_API_URL}${item.image_url}`}
                     alt={item.name}
+                    loading="lazy"
+                    decoding="async"
                     className={`${testimonials.length <= 3 ? 'w-12 h-12' : 'w-10 h-10'} rounded-full object-cover border border-white/10`}
                   />
                 ) : (

@@ -117,6 +117,8 @@ const WhatDefinesUs: React.FC = () => {
                 <img
                   src={item.image.startsWith('http') ? item.image : `${import.meta.env.VITE_API_URL}${item.image}`}
                   alt={item.title}
+                  loading="lazy"
+                  decoding="async"
                   className="card-image w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700 grayscale group-hover:grayscale-0"
                 />
               </div>

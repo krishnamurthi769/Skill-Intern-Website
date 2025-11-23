@@ -129,6 +129,8 @@ const Home: React.FC = () => {
                     <img
                       src={item.image.startsWith('http') ? item.image : `${import.meta.env.VITE_API_URL}${item.image}`}
                       alt={item.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full aspect-[4/3] object-cover transform group-hover:scale-110 transition-transform duration-700"
                     />
                   </div>
