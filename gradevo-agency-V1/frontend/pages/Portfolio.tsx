@@ -3,6 +3,7 @@ import React from 'react';
 import SectionHeader from '../components/ui/SectionHeader';
 import { PORTFOLIO_DATA } from '../constants';
 import CTABanner from '../components/CTABanner';
+import ImageWithFallback from '../components/ui/ImageWithFallback';
 
 const CATEGORIES = ['All', 'Brand Solutions', 'Tech Solutions', 'Media Solutions', 'Others'];
 
@@ -71,7 +72,7 @@ const Portfolio: React.FC = () => {
                   className="w-full md:w-2/3 relative group cursor-none overflow-hidden rounded-2xl"
                   data-cursor="View More"
                 >
-                  <img
+                  <ImageWithFallback
                     src={item.image.startsWith('http') ? item.image : `${import.meta.env.VITE_API_URL}${item.image}`}
                     alt={item.title}
                     loading="lazy"

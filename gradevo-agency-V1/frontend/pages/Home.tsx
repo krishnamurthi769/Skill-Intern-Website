@@ -12,6 +12,7 @@ import WhatDefinesUs from '../components/WhatDefinesUs';
 import { PORTFOLIO_DATA } from '../constants';
 import CTABanner from '../components/CTABanner';
 import Testimonials from '../components/Testimonials';
+import ImageWithFallback from '../components/ui/ImageWithFallback';
 
 const Home: React.FC = () => {
   const heroTextRef = useRef<HTMLDivElement>(null);
@@ -126,7 +127,7 @@ const Home: React.FC = () => {
                     data-cursor="View More"
                   >
                     <div className="absolute inset-0 bg-gradevo-blue/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay" />
-                    <img
+                    <ImageWithFallback
                       src={item.image.startsWith('http') ? item.image : `${import.meta.env.VITE_API_URL}${item.image}`}
                       alt={item.title}
                       loading="lazy"

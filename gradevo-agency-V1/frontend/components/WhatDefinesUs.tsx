@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { Plus } from 'lucide-react';
+import ImageWithFallback from './ui/ImageWithFallback';
 
 interface DnaItem {
   id: number;
@@ -114,7 +115,7 @@ const WhatDefinesUs: React.FC = () => {
               {/* Image Layer */}
               <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute inset-0 bg-gradevo-navy/40 z-10 group-hover:bg-gradevo-navy/20 transition-colors duration-500" />
-                <img
+                <ImageWithFallback
                   src={item.image.startsWith('http') ? item.image : `${import.meta.env.VITE_API_URL}${item.image}`}
                   alt={item.title}
                   loading="lazy"

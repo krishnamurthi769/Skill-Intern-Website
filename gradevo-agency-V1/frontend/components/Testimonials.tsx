@@ -6,6 +6,7 @@ import { TESTIMONIALS_DATA } from '../constants';
 import SectionHeader from './ui/SectionHeader';
 import { Quote } from 'lucide-react';
 import MagneticButton from './ui/MagneticButton';
+import ImageWithFallback from './ui/ImageWithFallback';
 
 const Testimonials: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,7 +65,7 @@ const Testimonials: React.FC = () => {
               </p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 {item.image_url ? (
-                  <img
+                  <ImageWithFallback
                     src={item.image_url.startsWith('http') ? item.image_url : `${import.meta.env.VITE_API_URL}${item.image_url}`}
                     alt={item.name}
                     loading="lazy"
