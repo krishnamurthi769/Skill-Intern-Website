@@ -1,0 +1,12 @@
+
+[API REQUEST] User: dev@starto.com Body: {"toUserId":"cmjcxlzuz0001pkdpyrze6pvw","senderName":"Ram","senderRole":"Founder","purpose":"Workspace","message":"Hiiiiiiiiii","fromFirebaseUid":"8OrXVqPIPvYrkKcsvI2yHC3hH953"}
+[API ERROR] 400 Missing Fields
+
+[API REQUEST] User: dev@starto.com Body: {"toUserId":"cmjcxlzuz0001pkdpyrze6pvw","senderName":"Ram","senderRole":"Founder","purpose":"Workspace","message":"Hi Im Ram","fromFirebaseUid":"8OrXVqPIPvYrkKcsvI2yHC3hH953"}
+[API ERROR] 400 Missing Fields
+
+[API REQUEST] User: dev@starto.com Body: {"toUserId":"cmjcxlzuz0001pkdpyrze6pvw","senderName":"Ram","senderRole":"Founder","purpose":"Workspace","message":"Hi Im Ram","fromFirebaseUid":"8OrXVqPIPvYrkKcsvI2yHC3hH953"}
+[API ERROR] 400 Missing Fields
+
+[API REQUEST] User: dev@starto.com Body: {"toUserId":"cmjcxlzuz0001pkdpyrze6pvw","senderName":"Ram","senderRole":"Founder","purpose":"Workspace","message":"Hi Im Ram","fromFirebaseUid":"8OrXVqPIPvYrkKcsvI2yHC3hH953"}
+[API SUCCESS] Request Created

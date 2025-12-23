@@ -1,0 +1,289 @@
+[2025-12-11T19:46:06.295Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-11T19:46:06.302Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-11T19:46:06.304Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "dddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "teamSize": "1",
+  "fundingNeeded": "pre-seed",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-11T19:46:06.304Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-11T19:46:06.843Z] DEBUG_USER_FOUND: "null"
+[2025-12-11T19:46:06.843Z] DEBUG_ERROR: User not found in DB 
+[2025-12-11T19:46:07.658Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-11T19:46:07.667Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-11T19:46:07.668Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "dddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "teamSize": "1",
+  "fundingNeeded": "pre-seed",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-11T19:46:07.668Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-11T19:46:07.727Z] DEBUG_USER_FOUND: "null"
+[2025-12-11T19:46:07.728Z] DEBUG_ERROR: User not found in DB 
+[2025-12-11T19:46:08.300Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-11T19:46:08.303Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-11T19:46:08.304Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "dddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "teamSize": "1",
+  "fundingNeeded": "pre-seed",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-11T19:46:08.304Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-11T19:46:08.363Z] DEBUG_USER_FOUND: "null"
+[2025-12-11T19:46:08.363Z] DEBUG_ERROR: User not found in DB 
+[2025-12-11T19:46:08.530Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-11T19:46:08.538Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-11T19:46:08.539Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "dddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "teamSize": "1",
+  "fundingNeeded": "pre-seed",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-11T19:46:08.539Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-11T19:46:08.599Z] DEBUG_USER_FOUND: "null"
+[2025-12-11T19:46:08.599Z] DEBUG_ERROR: User not found in DB 
+[2025-12-11T19:46:08.756Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-11T19:46:08.772Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-11T19:46:08.773Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "dddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "teamSize": "1",
+  "fundingNeeded": "pre-seed",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-11T19:46:08.774Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-11T19:46:08.834Z] DEBUG_USER_FOUND: "null"
+[2025-12-11T19:46:08.834Z] DEBUG_ERROR: User not found in DB 
+[2025-12-11T19:46:50.065Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-11T19:46:50.085Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-11T19:46:50.086Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "dddddddddddddddddddddddddddddd",
+  "teamSize": "1",
+  "fundingNeeded": "bootstrapped",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-11T19:46:50.087Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-11T19:46:50.207Z] DEBUG_USER_FOUND: "null"
+[2025-12-11T19:46:50.207Z] DEBUG_ERROR: User not found in DB 
+[2025-12-11T19:46:51.277Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-11T19:46:51.290Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-11T19:46:51.290Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "dddddddddddddddddddddddddddddd",
+  "teamSize": "1",
+  "fundingNeeded": "bootstrapped",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-11T19:46:51.291Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-11T19:46:51.353Z] DEBUG_USER_FOUND: "null"
+[2025-12-11T19:46:51.353Z] DEBUG_ERROR: User not found in DB 
+[2025-12-11T19:46:51.519Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-11T19:46:51.540Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-11T19:46:51.541Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "dddddddddddddddddddddddddddddd",
+  "teamSize": "1",
+  "fundingNeeded": "bootstrapped",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-11T19:46:51.541Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-11T19:46:51.602Z] DEBUG_USER_FOUND: "null"
+[2025-12-11T19:46:51.603Z] DEBUG_ERROR: User not found in DB 
+[2025-12-11T19:49:23.879Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-11T19:49:23.890Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-11T19:49:23.891Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "dddddddddddddddddddddddddddddd",
+  "teamSize": "1",
+  "fundingNeeded": "bootstrapped",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-11T19:49:23.892Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-11T19:49:24.012Z] DEBUG_USER_FOUND: "null"
+[2025-12-11T19:49:24.013Z] DEBUG: User not found in DB, creating from session... 
+[2025-12-11T19:49:24.166Z] DEBUG: Created new user: "cmj1uqgtq0000j2xtbrpp8hka"
+[2025-12-11T19:49:24.286Z] DEBUG_EXISTING_PROFILE: "null"
+[2025-12-11T19:49:24.287Z] DEBUG: Creating new profile 
+[2025-12-11T19:49:24.528Z] DEBUG: Success 
+[2025-12-11T20:01:56.957Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-11T20:01:56.965Z] DEBUG_SESSION: 
+[2025-12-11T20:01:56.965Z] DEBUG_ERROR: No session or email 
+[2025-12-13T04:32:25.147Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-13T04:32:25.155Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-13T04:32:25.156Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "This is where Starto adds real value. Starto is an AI platform that analyses a founder’s idea in minutes and shows them demand insights, competitor landscape, risks, and steps to improve the idea. It also matches founders with the right freelancers, interns, mentors, and investors around them so they get the exact support they need to start smart, save money, and avoid failure.",
+  "teamSize": "2-5",
+  "fundingNeeded": "bootstrapped",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-13T04:32:25.157Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-13T04:32:26.402Z] DEBUG_USER_FOUND: "cmj1uqgtq0000j2xtbrpp8hka"
+[2025-12-13T04:32:26.534Z] DEBUG_EXISTING_PROFILE: "cmj1uqh1c0001j2xt95i8ronj"
+[2025-12-13T04:32:26.534Z] DEBUG: Updating existing profile 
+[2025-12-13T04:32:26.801Z] DEBUG: Success 
+[2025-12-13T04:34:26.885Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-13T04:34:26.906Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-13T04:34:26.907Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "This is where Starto adds real value. Starto is an AI platform that analyses a founder’s idea in minutes and shows them demand insights, competitor landscape, risks, and steps to improve the idea. It also matches founders with the right freelancers, interns, mentors, and investors around them so they get the exact support they need to start smart, save money, and avoid failure.",
+  "teamSize": "1",
+  "fundingNeeded": "bootstrapped",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-13T04:34:26.908Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-13T04:34:27.035Z] DEBUG_USER_FOUND: "cmj1uqgtq0000j2xtbrpp8hka"
+[2025-12-13T04:34:27.098Z] DEBUG_EXISTING_PROFILE: "cmj1uqh1c0001j2xt95i8ronj"
+[2025-12-13T04:34:27.098Z] DEBUG: Updating existing profile 
+[2025-12-13T04:34:27.225Z] DEBUG: Success 
+[2025-12-13T04:36:51.739Z] DEBUG: POST /api/onboarding/startup called 
+[2025-12-13T04:36:51.750Z] DEBUG_SESSION: {
+  "user": {
+    "name": "Dev User",
+    "email": "dev@starto.com",
+    "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=dev",
+    "id": "dev-user-id"
+  }
+}
+[2025-12-13T04:36:51.753Z] DEBUG_STARTUP_BODY: {
+  "startupName": "Starto",
+  "stage": "idea",
+  "industry": "Tech",
+  "pitch": "This is where Starto adds real value. Starto is an AI platform that analyses a founder’s idea in minutes and shows them demand insights, competitor landscape, risks, and steps to improve the idea. It also matches founders with the right freelancers, interns, mentors, and investors around them so they get the exact support they need to start smart, save money, and avoid failure.",
+  "teamSize": "1",
+  "fundingNeeded": "bootstrapped",
+  "location": "",
+  "website": "",
+  "address": ""
+}
+[2025-12-13T04:36:51.753Z] DEBUG: Looking up user with email: "dev@starto.com"
+[2025-12-13T04:36:51.879Z] DEBUG_USER_FOUND: "cmj1uqgtq0000j2xtbrpp8hka"
+[2025-12-13T04:36:51.942Z] DEBUG_EXISTING_PROFILE: "cmj1uqh1c0001j2xt95i8ronj"
+[2025-12-13T04:36:51.942Z] DEBUG: Updating existing profile 
+[2025-12-13T04:36:52.071Z] DEBUG: Success 

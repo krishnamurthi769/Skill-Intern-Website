@@ -1,0 +1,746 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 🔥 CORE TABLES
+
+enum UserRole {
+  ADMIN
+  FREELANCER
+  INVESTOR
+  PROVIDER
+  STARTUP
+}
+
+// NEW ENUMS
+enum ExperienceLevel {
+  JUNIOR
+  MID
+  SENIOR
+  EXPERT
+}
+
+enum AvailabilityType {
+  FULL_TIME
+  PART_TIME
+  HOURLY
+}
+
+enum WorkType {
+  REMOTE
+  ONSITE
+  HYBRID
+}
+
+enum StartupStage {
+  IDEA
+  MVP
+  GROWTH
+  SCALE
+}
+
+enum FundingRound {
+  BOOTSTRAPPED
+  PRE_SEED
+  SEED
+  SERIES_A
+  SERIES_B_PLUS
+}
+
+enum InvestorType {
+  ANGEL
+  VC
+  SYNDICATE
+  ACCELERATOR
+}
+
+enum ProviderType {
+  COWORKING
+  PRIVATE_OFFICE
+  CAFE
+  GYM
+  RETAIL
+  INDUSTRIAL
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  firebaseUid   String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String? // For credentials auth
+  role          UserRole?
+  activeRole    UserRole? // Explicitly tracks the currently active dashboard role
+  phoneNumber   String? // Added for Connection Request Flow
+  onboarded     Boolean   @default(false)
+
+  accounts Account[]
+
+  sessions     Session[]
+  kycDocuments KycDocument[]
+
+  // Specific Module Profiles
+  freelancerProfile FreelancerProfile?
+  providerProfile   ProviderProfile?
+  investorProfile   InvestorProfile?
+  startupProfile    StartupProfile?
+
+  // Relations from other modules
+  notifications Notification[]
+  auditLogs     AuditLog[]
+  wallets       Wallet[]
+  spaceBookings SpaceBooking[]
+
+  conversations Conversation[]
+  messagesSent  Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Provider 2.0 Relations
+  properties          Property[]          @relation("OwnerProperties")
+  inquiries           Inquiry[]           @relation("StartupInquiries")
+  // Connection Relations
+  sentConnections     ConnectionRequest[] @relation("SentConnections")
+  receivedConnections ConnectionRequest[] @relation("ReceivedConnections")
+
+  // Explore Module
+  savedLocations SavedLocation[]
+}
+
+model SavedLocation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  latitude  Float
+  longitude Float
+  address   String?
+  industry  String?
+  budget    String?
+  score     Int?
+  
+  // Snapshot of analysis
+  competition String? // "High", "Medium", "Low"
+  demand      String?
+  risk        String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model ConnectionRequest {
+  id         String   @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  status     ConnectionStatus @default(PENDING) // PENDING, ACCEPTED, REJECTED
+  
+  // Sender Details (Snapshot at time of request)
+  senderName String
+  senderRole String
+  purpose    String
+  message    String   @db.VarChar(300)
+
+  // Generated on ACCEPT only
+  connectionId String? @unique
+  whatsappLink String? // Stores the generated WhatsApp link upon acceptance
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  fromUser User @relation("SentConnections", fields: [fromUserId], references: [id])
+  toUser   User @relation("ReceivedConnections", fields: [toUserId], references: [id])
+
+  @@unique([fromUserId, toUserId]) // Prevent duplicate requests
+  @@index([toUserId, status])      // Fast inbox lookup
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model KycDocument {
+  id     String @id @default(cuid())
+  userId String
+  type   String // "PASSPORT", "ID_CARD", "BUSINESS_LICENSE"
+  url    String
+  status String @default("PENDING") // PENDING, APPROVED, REJECTED
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 🔥 FREELANCER MODULE
+
+model FreelancerProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  headline     String?  // Optional "Human" field
+  bio          String?  
+  isActive     Boolean  @default(false)  
+  
+  // Structured Data
+  skills       String[] // Validated against SKILLS constant
+  experience   ExperienceLevel? // Enum
+  availability AvailabilityType? // Enum
+  workType     WorkType? // Enum
+  
+  portfolio    String? // URL
+  github       String?
+  linkedin     String?
+  hourlyRate   Decimal?
+  
+  // Location (Structured)
+  latitude     Float?
+  longitude    Float?
+  city         String?
+  state        String?
+  country      String?
+  pincode      String?
+  address      String? // Optional Display Only
+
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bids                Bid[]
+  contracts           Contract[]
+  projects            Project[]
+  proposals           Proposal[]
+  MatchRecommendation MatchRecommendation[]
+
+  @@index([latitude, longitude])
+}
+
+model Project {
+  id      String @id @default(cuid())
+  ownerId String 
+
+  title       String
+  description String
+  budget      Decimal
+  status      String  @default("OPEN") 
+  
+  owner FreelancerProfile @relation(fields: [ownerId], references: [id]) 
+  // Wait, owner relation to FreelancerProfile is tricky if Owner is a User (Startup).
+  // Current schema had this. Let's keep it for now to avoid breaking unrelated things, but note:
+  // Usually Startups own projects. If Startup owns project, it should link to StartupProfile or User.
+  // For this refactor, I will LEAVE this relation as is to minimize regression risk, 
+  // as my task is Structured Data, not relation refactor.
+
+  bids  Bid[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Bid {
+  id           String  @id @default(cuid())
+  projectId    String
+  freelancerId String
+  amount       Decimal
+  proposal     String
+  status       String  @default("PENDING") 
+
+  project    Project           @relation(fields: [projectId], references: [id])
+  freelancer FreelancerProfile @relation(fields: [freelancerId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Contract {
+  id           String  @id @default(cuid())
+  taskId       String
+  startupId    String
+  freelancerId String
+  amount       Decimal
+  status       String  @default("ACTIVE")
+
+  task       Task              @relation(fields: [taskId], references: [id])
+  startup    StartupProfile    @relation(fields: [startupId], references: [id])
+  freelancer FreelancerProfile @relation(fields: [freelancerId], references: [id])
+  milestones Milestone[]
+
+  createdAt DateTime @default(now())
+}
+
+model Milestone {
+  id         String  @id @default(cuid())
+  contractId String
+  title      String
+  amount     Decimal
+  status     String  @default("PENDING") 
+
+  contract Contract @relation(fields: [contractId], references: [id])
+}
+
+// 🔥 SPACE PROVIDER MODULE
+
+model ProviderProfile {
+  id           String  @id @default(cuid())
+  userId       String  @unique
+  companyName  String?
+  description  String? // Optional "Human" field
+  isActive     Boolean @default(false)
+  
+  // Structured
+  providerType ProviderType? // Enum
+  capacity     Int?
+  
+  // Pricing (Int ranges)
+  minPrice     Int? 
+  maxPrice     Int?
+  priceUnit    String? // e.g., "month", "hour", "desk"
+  
+  // Location
+  latitude     Float?
+  longitude    Float?
+  city         String?
+  state        String?
+  country      String?
+  pincode      String?
+  address      String? // Display Only
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spaces Space[]
+
+  @@index([latitude, longitude])
+}
+
+model Space {
+  id           String   @id @default(cuid())
+  providerId   String
+  name         String
+  description  String
+  address      String
+  pricePerHour Decimal
+  capacity     Int      @default(1)
+  amenities    String[]
+
+  provider ProviderProfile @relation(fields: [providerId], references: [id])
+  images   SpaceImage[]
+  bookings SpaceBooking[]
+
+  createdAt DateTime @default(now())
+}
+
+model SpaceImage {
+  id      String @id @default(cuid())
+  spaceId String
+  url     String
+
+  space Space @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+}
+
+model SpaceBooking {
+  id         String   @id @default(cuid())
+  spaceId    String
+  userId     String 
+  startTime  DateTime
+  endTime    DateTime
+  status     String   @default("PENDING") 
+  totalPrice Decimal
+
+  space Space @relation(fields: [spaceId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+// 🔥 INVESTOR MODULE
+
+model InvestorProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  firmName     String?
+  thesisNote   String? // Optional "Human" field
+  isActive     Boolean @default(false)
+  
+  // Structured
+  investorType InvestorType? // Enum
+  
+  // Ticket Size (Int Range)
+  minTicketSize Int?
+  maxTicketSize Int?
+
+  sectors      String[] // Validated Array
+  stages       StartupStage[] // Array of Enums
+  
+  isPublic     Boolean  @default(false)
+  
+  // Location
+  latitude     Float?
+  longitude    Float?
+  city         String?
+  state        String?
+  country      String?
+  pincode      String?
+  address      String?
+
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  investments         Investment[]
+  MatchRecommendation MatchRecommendation[]
+
+  @@index([latitude, longitude])
+}
+
+model StartupProfile {
+  id        String   @id @default(cuid())
+  ownerId   String   @unique // User ID
+  isActive  Boolean  @default(false)
+  name      String
+  pitchDeck String? // URL
+  valuation Decimal?
+
+  // New Onboarding Fields
+  stage         StartupStage? // Enum
+  industry      String? // Validated
+  oneLiner      String? // "Human" field
+  description   String? // Detail
+  website       String?
+  teamSize      String? // "1-10" matches constant
+  
+  // Funding
+  fundingRound  FundingRound? // Enum
+  fundingNeeded Boolean @default(false)
+  
+  minHiringBudget Int?
+  maxHiringBudget Int?
+
+  // Location
+  latitude  Float?
+  longitude Float?
+  city      String?
+  state     String?
+  country   String?
+  pincode   String?
+  address   String?
+
+  owner               User                  @relation(fields: [ownerId], references: [id])
+  investments         Investment[]
+  tasks               Task[]
+  contracts           Contract[]
+  aiInsight           StartupAIInsight?
+  MatchRecommendation MatchRecommendation[]
+
+  @@index([latitude, longitude])
+}
+
+model StartupAIInsight {
+  id                 String @id @default(cuid())
+  startupId          String @unique
+  summary            String
+  strengths          Json
+  gaps               Json
+  recommendedRoles   Json
+  suggestedNextSteps Json
+
+  startup StartupProfile @relation(fields: [startupId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id          String  @id @default(cuid())
+  startupId   String
+  title       String
+  description String
+  budget      Decimal? 
+  duration    String?
+  category    String?
+  status      String  @default("OPEN")
+
+  startup   StartupProfile @relation(fields: [startupId], references: [id])
+  proposals Proposal[]
+  contracts Contract[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Proposal {
+  id           String  @id @default(cuid())
+  taskId       String
+  freelancerId String
+  amount       Decimal
+  coverLetter  String // This is likely unstructured, but OK for proposal
+  status       String  @default("PENDING")
+
+  task       Task              @relation(fields: [taskId], references: [id])
+  freelancer FreelancerProfile @relation(fields: [freelancerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Investment {
+  id         String   @id @default(cuid())
+  investorId String
+  startupId  String
+  amount     Decimal
+  equity     Decimal? // Percentage
+  status     String   @default("OFFERED") // OFFERED, ACCEPTED, REJECTED, COMPLETED
+
+  investor InvestorProfile @relation(fields: [investorId], references: [id])
+  startup  StartupProfile  @relation(fields: [startupId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+// 🔥 PAYMENTS
+
+model Wallet {
+  id       String  @id @default(cuid())
+  userId   String  @unique
+  balance  Decimal @default(0)
+  currency String  @default("USD")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  payouts      Payout[]
+}
+
+model Transaction {
+  id        String  @id @default(cuid())
+  walletId  String
+  amount    Decimal
+  type      String // CREDIT, DEBIT
+  reference String? // Payment Gateway ID
+  status    String  @default("PENDING")
+
+  wallet    Wallet   @relation(fields: [walletId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Payout {
+  id       String  @id @default(cuid())
+  walletId String
+  amount   Decimal
+  method   String // BANK, PAYPAL
+  status   String  @default("PROCESSING")
+
+  wallet    Wallet   @relation(fields: [walletId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+// 🔥 SUPPORT
+
+model Notification {
+  id      String  @id @default(cuid())
+  userId  String
+  title   String
+  message String
+  read    Boolean @default(false)
+  type    String? // SYSTEM, MESSAGE, ALERT
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id       String  @id @default(cuid())
+  userId   String?
+  action   String
+  entity   String 
+  entityId String
+  details  String? 
+
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+// 🔥 COMMUNICATION (CHAT MVP)
+model Conversation {
+  id           String   @id @default(cuid())
+  // connectionId string removed as we are moving to WhatsApp only
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt 
+
+  messages   Message[]
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  read           Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+// 🔥 PROVIDER 2.0 (Startup Infrastructure)
+
+model Property {
+  id             String   @id @default(cuid())
+  ownerId        String
+  title          String
+  slug           String   @unique
+  description    String?
+  category       String // Office | Retail | Gym | Studio | Industrial | Cafe
+  purposeTags    String[] @default([])
+  sizeSqFt       Int?
+  priceMonthly   Int? 
+  priceYearly    Int?
+  minLeaseMonths Int?
+  depositAmount  Int?
+  
+  // Location structured?
+  latitude       Float?
+  longitude      Float?
+  city           String?
+  state          String?
+  country        String?
+  pincode        String?
+  address        String?
+  
+  amenities      String[] @default([])
+  powerRating    String? 
+  internet       String? 
+  parkingSpots   Int?
+  images         String[] @default([])
+  status         String   @default("AVAILABLE") 
+
+  owner     User               @relation("OwnerProperties", fields: [ownerId], references: [id])
+  visits    Visit[]
+  inquiries Inquiry[]
+  contracts PropertyContract[]
+  reviews   Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Inquiry {
+  id             String  @id @default(cuid())
+  propertyId     String
+  startupId      String 
+  ideaSummary    String?
+  requiredSize   Int?
+  teamSize       Int?
+  durationMonths Int?
+  budget         Int?
+  status         String  @default("PENDING") 
+  message        String?
+
+  property Property @relation(fields: [propertyId], references: [id])
+  startup  User     @relation("StartupInquiries", fields: [startupId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Visit {
+  id          String   @id @default(cuid())
+  propertyId  String
+  requesterId String
+  scheduledAt DateTime
+  status      String   @default("PENDING") 
+  notes       String?
+
+  property Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model PropertyContract {
+  id          String  @id @default(cuid())
+  propertyId  String
+  startupId   String
+  providerId  String
+  leaseMonths Int
+  monthlyRate Int
+  deposit     Int
+  status      String  @default("PENDING") 
+  terms       String?
+  fileUrl     String? 
+
+  property Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id         String  @id @default(cuid())
+  propertyId String
+  authorId   String
+  rating     Int
+  comment    String?
+
+  property Property @relation(fields: [propertyId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model MatchRecommendation {
+  id           String   @id @default(cuid())
+  startupId    String
+  freelancerId String?
+  investorId   String?
+  matchScore   Int
+  reason       String?
+  createdAt    DateTime @default(now())
+
+  expiresAt DateTime
+  version   Int      @default(1)
+
+  startup    StartupProfile     @relation(fields: [startupId], references: [id])
+  freelancer FreelancerProfile? @relation(fields: [freelancerId], references: [id])
+  investor   InvestorProfile?   @relation(fields: [investorId], references: [id])
+
+  @@unique([startupId, freelancerId])
+  @@unique([startupId, investorId])
+}

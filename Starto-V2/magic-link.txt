@@ -1,0 +1,1 @@
+http://localhost:3000/api/auth/callback/email?callbackUrl=http%3A%2F%2Flocalhost%3A3000&token=34d21af80d4e4c814970b54021330e2f207055f1b033e7aa4d50fa94f3216c75&email=krishnamurthikm07%40gmail.com
