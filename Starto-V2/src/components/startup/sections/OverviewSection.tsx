@@ -8,18 +8,27 @@ import { AIInsightsCard } from "@/components/startup/AIInsightsCard"
 import { Badge } from "@/components/ui/badge"
 import { SavedLocationsWidget } from "@/components/dashboard/widgets/SavedLocationsWidget"
 
+import { useUser } from "@/hooks/useUser"
+
 export function OverviewSection() {
+    const { dbUser } = useUser();
     const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+    const startup = dbUser?.startupProfile;
+    const name = startup?.name || dbUser?.name || "Founder";
+    const stage = startup?.stage ? `${startup.stage} Stage` : "Early Stage";
 
     return (
         <div className="flex flex-col gap-8">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-6">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+                    <h2 className="text-3xl font-bold tracking-tight">{name} Dashboard</h2>
                     <div className="flex items-center text-muted-foreground mt-1 gap-2 text-sm">
                         <Calendar className="h-4 w-4" />
                         <span>{currentDate}</span>
+                        <span className="text-muted-foreground/50">•</span>
+                        <Badge variant="outline" className="font-normal text-muted-foreground">{stage}</Badge>
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -36,33 +45,29 @@ export function OverviewSection() {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <ProStatsCard
                     title="Cash on Hand"
-                    value="₹ 36,00,000"
+                    value="--"
                     icon={Wallet}
-                    trend="+2.5%"
-                    description="vs last month"
+                    description="Add financial details"
                     variant="default"
                 />
                 <ProStatsCard
                     title="Monthly Burn"
-                    value="₹ 4,50,000"
+                    value="--"
                     icon={Banknote}
-                    trend="-5%"
-                    trendColor="text-green-600"
-                    description="vs last month"
-                    variant="warning"
+                    description="Not calculated yet"
+                    variant="default"
                 />
                 <ProStatsCard
                     title="Est. Runway"
-                    value="8 Months"
+                    value="--"
                     icon={TrendingUp}
-                    description="Conservative est."
+                    description="Insufficient data"
                 />
                 <ProStatsCard
                     title="Active Applications"
-                    value="12"
+                    value="0"
                     icon={Users}
-                    trend="+4"
-                    description="new this week"
+                    description="No active applications"
                 />
             </div>
 
@@ -94,30 +99,17 @@ export function OverviewSection() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y">
-                                        <PipelineRow
-                                            job="Frontend Components"
-                                            proposals={5}
-                                            status="Active"
-                                            href="/startup/tasks/1"
-                                        />
-                                        <PipelineRow
-                                            job="UX Review"
-                                            proposals={2}
-                                            status="Reviewing"
-                                            href="/startup/tasks/2"
-                                        />
-                                        <PipelineRow
-                                            job="Backend API Integration"
-                                            proposals={8}
-                                            status="Active"
-                                            href="/startup/tasks/3"
-                                        />
-                                        <PipelineRow
-                                            job="Mobile App MVP"
-                                            proposals={12}
-                                            status="Interviewing"
-                                            href="/startup/tasks/4"
-                                        />
+                                        <tr>
+                                            <td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <Briefcase className="h-8 w-8 opacity-20" />
+                                                    <p>No active jobs posted yet.</p>
+                                                    <Button variant="outline" size="sm" className="mt-2" asChild>
+                                                        <Link href="/dashboard/tasks/new">Post a Job</Link>
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -138,26 +130,9 @@ export function OverviewSection() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-6">
-                                <ActivityItem
-                                    text="New proposal from Rahul S. for 'Frontend Dev'"
-                                    time="10m ago"
-                                    type="proposal"
-                                />
-                                <ActivityItem
-                                    text="Equity allocation updated for Q4"
-                                    time="2h ago"
-                                    type="system"
-                                />
-                                <ActivityItem
-                                    text="Invoice #INV-2024-001 paid to MkStudio"
-                                    time="Yesterday"
-                                    type="invoice"
-                                />
-                                <ActivityItem
-                                    text="New match: 95% fit with Seed Investor"
-                                    time="2 days ago"
-                                    type="match"
-                                />
+                                <div className="text-sm text-muted-foreground text-center py-4">
+                                    No recent activity to show.
+                                </div>
                             </div>
                         </CardContent>
                     </Card>

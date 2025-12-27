@@ -1,6 +1,7 @@
 // src/components/location/LocationSelector.tsx
 "use client";
 import React, { useEffect, useRef } from "react";
+import { useJsApiLoader } from "@react-google-maps/api";
 
 type Props = {
     onSelect: (payload: {
@@ -16,33 +17,37 @@ type Props = {
     initialValue?: string;
 };
 
+const LIBRARIES: ("places")[] = ["places"];
+
 export default function LocationSelector({ onSelect, placeholder = "Search location", initialValue = "" }: Props) {
-    const ref = useRef<HTMLInputElement | null>(null);
+    const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+    const { isLoaded } = useJsApiLoader({
+        id: "starto-map-script",
+        googleMapsApiKey: key,
+        libraries: LIBRARIES
+    });
+
+    const inputRef = useRef<HTMLInputElement | null>(null);
     const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
 
     useEffect(() => {
-        if (!ref.current) return;
-        // Check if google is available. It should be loaded by the parent or script tag.
-        if (typeof google === "undefined" || !google.maps || !google.maps.places) {
-            console.warn("Google Maps API not loaded");
-            return;
-        }
+        if (!isLoaded || !inputRef.current) return;
 
-        const input = ref.current;
-        autoRef.current = new google.maps.places.Autocomplete(input, {
+        // Initialize Autocomplete
+        autoRef.current = new google.maps.places.Autocomplete(inputRef.current, {
             types: ["geocode", "establishment"],
-            componentRestrictions: { country: [] }, // specify if you want only IN
+            fields: ["geometry", "formatted_address", "address_components", "name"]
         });
 
-        autoRef.current.addListener("place_changed", () => {
-            const place = autoRef.current!.getPlace();
-            if (!place.geometry || !place.geometry.location) return;
+        const listener = autoRef.current.addListener("place_changed", () => {
+            const place = autoRef.current?.getPlace();
+            if (!place || !place.geometry || !place.geometry.location) return;
 
             const latitude = place.geometry.location.lat();
             const longitude = place.geometry.location.lng();
-            const address = place.formatted_address || place.name || input.value;
+            const address = place.formatted_address || place.name || inputRef.current?.value || "";
 
-            // parse components
+            // Parse Components
             const comp = (place.address_components || []).reduce((acc: any, c: any) => {
                 for (const t of c.types) acc[t] = c.long_name;
                 return acc;
@@ -63,12 +68,23 @@ export default function LocationSelector({ onSelect, placeholder = "Search locat
             if (autoRef.current) {
                 google.maps.event.clearInstanceListeners(autoRef.current);
             }
+            if (listener) listener.remove();
         };
-    }, [onSelect]);
+    }, [isLoaded, onSelect]);
+
+    if (!isLoaded) {
+        return (
+            <input
+                disabled
+                placeholder="Loading map..."
+                className="w-full rounded border px-3 py-2 bg-background border-input opacity-50 cursor-wait"
+            />
+        );
+    }
 
     return (
         <input
-            ref={ref}
+            ref={inputRef}
             defaultValue={initialValue}
             placeholder={placeholder}
             className="w-full rounded border px-3 py-2 bg-background border-input ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"

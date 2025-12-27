@@ -1,6 +1,6 @@
 // src/app/api/nearby/startups/route.ts
 import { NextResponse } from "next/server";
-import { queryNearbyRaw } from "@/lib/location-utils";
+import { prisma } from "@/lib/prisma";
 import { log, error as logError } from "@/lib/logger";
 
 export async function GET(req: Request) {
@@ -19,24 +19,51 @@ export async function GET(req: Request) {
         let whereClause = "";
         if (city) {
             const c = city.replace(/'/g, "''");
-            whereClause += ` AND city ILIKE '${c}%' `;
+            whereClause += ` AND u.city ILIKE '${c}%' `;
         }
 
         const industry = url.searchParams.get("industry") || "";
         if (industry) {
             const i = industry.replace(/'/g, "''");
-            whereClause += ` AND industry ILIKE '${i}%' `;
+            whereClause += ` AND s.industry ILIKE '${i}%' `;
         }
 
-        const rows = await queryNearbyRaw({
-            tableName: "StartupProfile",
-            lat,
-            lng,
-            radiusKm: radius,
-            columns: "id, ownerId, name, valuation, pitchDeck, address, city, latitude, longitude",
-            whereClause,
-            limit,
-        }) as any[];
+        // Raw SQL for JOIN: User (Location) + StartupProfile (Details)
+        const sql = `
+            SELECT 
+                s.id, s."ownerId", s.name, s.valuation, s."pitchDeck", 
+                u.city, u.latitude, u.longitude,
+                s.industry, s.stage, s."oneLiner",
+                (
+                    6371 * acos(
+                        cos(radians($1)) *
+                        cos(radians(u.latitude)) *
+                        cos(radians(u.longitude) - radians($2)) +
+                        sin(radians($1)) * sin(radians(u.latitude))
+                    )
+                ) AS distance_km
+            FROM "StartupProfile" s
+            JOIN "User" u ON s."ownerId" = u.id
+            WHERE u.latitude IS NOT NULL AND u.longitude IS NOT NULL
+            ${whereClause}
+            AND (
+                6371 * acos(
+                    cos(radians($1)) *
+                    cos(radians(u.latitude)) *
+                    cos(radians(u.longitude) - radians($2)) +
+                    sin(radians($1)) * sin(radians(u.latitude))
+                )
+            ) <= $3
+            ORDER BY distance_km ASC
+            LIMIT $4;
+        `;
+
+        // HAVING clause is cleaner but some Postgres versions/configs act up with calculated aliases in HAVING 
+        // without grouping or re-stating formula. 
+        // Re-stating formula in WHERE/AND is safer for simple queries like this.
+        // Actually, $queryRawUnsafe parameter usage: lat($1), lng($2), radius($3), limit($4)
+
+        const rows = await prisma.$queryRawUnsafe(sql, lat, lng, radius, limit);
 
         return NextResponse.json({ data: rows });
     } catch (err) {

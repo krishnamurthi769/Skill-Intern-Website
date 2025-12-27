@@ -16,73 +16,54 @@ import {
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
+import { useUser } from "@/hooks/useUser"
+
 export function DashboardSection() {
-    // Mock Data
+    const { dbUser } = useUser();
+    const provider = dbUser?.providerProfile;
+    const name = provider?.companyName || dbUser?.name || "Provider";
+
+    // Mock Data -> Real Empty States
     const stats = [
         {
             title: "Total Properties",
-            value: "4",
-            change: "+1 this month",
+            value: "0",
+            change: "No properties listed",
             icon: Building2,
-            trend: "up"
+            trend: "neutral"
         },
         {
             title: "Occupancy Rate",
-            value: "92%",
-            change: "+8.5% vs last month",
+            value: "--",
+            change: "N/A",
             icon: Users,
-            trend: "up"
+            trend: "neutral"
         },
         {
             title: "Pending Inquiries",
-            value: "12",
-            change: "5 require attention",
+            value: "0",
+            change: "All caught up",
             icon: Inbox,
             trend: "neutral"
         },
         {
             title: "Projected Revenue",
-            value: "$48,500",
-            change: "+12% vs last month",
+            value: "--",
+            change: "No active bookings",
             icon: DollarSign,
-            trend: "up"
+            trend: "neutral"
         },
     ];
 
-    const recentInquiries = [
-        {
-            id: "1",
-            startup: "Flow AI Solutions",
-            type: "Tech Office",
-            requirements: "1200 sqft • 15 people",
-            date: "2 hours ago",
-            status: "New"
-        },
-        {
-            id: "2",
-            startup: "GreenEarth Cafe",
-            type: "Retail / Cafe",
-            requirements: "800 sqft • Ground Floor",
-            date: "1 day ago",
-            status: "Reviewing"
-        },
-        {
-            id: "3",
-            startup: "FitTech Pro",
-            type: "Gym Space",
-            requirements: "3000 sqft • Ventilation",
-            date: "2 days ago",
-            status: "Meeting Scheduled"
-        }
-    ];
+    const recentInquiries: any[] = []; // Empty for now
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Provider Dashboard</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">{name} Dashboard</h1>
                     <p className="text-muted-foreground mt-1">
-                        Manage your startup infrastructure portfolio.
+                        {provider?.providerType ? `${provider?.providerType} • ` : ""}Manage your startup infrastructure portfolio.
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -102,17 +83,12 @@ export function DashboardSection() {
                             <CardTitle className="text-sm font-medium text-muted-foreground">
                                 {stat.title}
                             </CardTitle>
-                            <stat.icon className="h-4 w-4 text-primary" />
+                            <stat.icon className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{stat.value}</div>
                             <div className="flex items-center text-xs text-muted-foreground mt-1">
-                                {stat.trend === "up" ? (
-                                    <TrendingUp className="h-3 w-3 mr-1 text-primary" />
-                                ) : (
-                                    <Clock className="h-3 w-3 mr-1 text-muted-foreground" />
-                                )}
-                                <span className={stat.trend === "up" ? "text-primary font-medium" : "text-muted-foreground"}>
+                                <span className="text-muted-foreground">
                                     {stat.change}
                                 </span>
                             </div>
@@ -132,28 +108,24 @@ export function DashboardSection() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {recentInquiries.map((inquiry) => (
-                                <div key={inquiry.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border">
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-medium leading-none">{inquiry.startup}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {inquiry.type} • {inquiry.requirements}
-                                        </p>
+                            {recentInquiries.length > 0 ? (
+                                recentInquiries.map((inquiry) => (
+                                    <div key={inquiry.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border">
+                                        {/* ... render logic ... */}
                                     </div>
-                                    <div className="flex flex-col items-end gap-2">
-                                        <Badge
-                                            variant={inquiry.status === "New" ? "default" : "secondary"}
-                                        >
-                                            {inquiry.status}
-                                        </Badge>
-                                        <span className="text-xs text-muted-foreground">{inquiry.date}</span>
-                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-8 text-muted-foreground text-sm flex flex-col items-center">
+                                    <Inbox className="h-8 w-8 mb-2 opacity-20" />
+                                    <p>No new inquiries.</p>
                                 </div>
-                            ))}
+                            )}
                         </div>
-                        <Button variant="ghost" className="w-full mt-4 text-sm text-muted-foreground" asChild>
-                            <Link href="/provider?section=inquiries">View All Inquiries</Link>
-                        </Button>
+                        {recentInquiries.length > 0 && (
+                            <Button variant="ghost" className="w-full mt-4 text-sm text-muted-foreground" asChild>
+                                <Link href="/provider?section=inquiries">View All Inquiries</Link>
+                            </Button>
+                        )}
                     </CardContent>
                 </Card>
 

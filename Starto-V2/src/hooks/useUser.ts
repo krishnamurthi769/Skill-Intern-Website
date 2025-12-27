@@ -11,6 +11,18 @@ export interface DbUser {
     onboarded: boolean;
     firebaseUid: string | null;
     image: string | null;
+    // Location Fields
+    latitude?: number | null;
+    longitude?: number | null;
+    city?: string | null;
+    state?: string | null;
+    country?: string | null;
+    pincode?: string | null;
+    phoneNumber?: string | null;
+    freelancerProfile: any;
+    startupProfile: any;
+    investorProfile: any;
+    providerProfile: any;
 }
 
 export function useUser() {

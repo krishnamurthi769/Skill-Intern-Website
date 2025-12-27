@@ -12,12 +12,14 @@ export interface Job {
 
 export interface Startup {
     id: string;
+    ownerId: string;
     name: string;
     website?: string;
     description?: string;
     logo?: string;
     stage?: string;
     industry?: string;
+    oneLiner?: string; // Added field
     // Location Fields
     latitude?: number | null;
     longitude?: number | null;
@@ -77,7 +79,11 @@ export function useUpdateStartup() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
-            if (!res.ok) throw new Error("Failed to update profile");
+
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || errorData.message || "Failed to update profile");
+            }
             return res.json();
         },
         onSuccess: (data, variables) => {

@@ -88,6 +88,16 @@ export async function POST(req: Request) {
             },
         });
 
+        // NOTIFICATION SYSTEM: Alert the receiver
+        await prisma.notification.create({
+            data: {
+                userId: receiverUserId,
+                title: "New Connection Request",
+                message: `${sender.name || "A user"} wants to connect with you.`,
+                type: "CONNECTION_REQUEST"
+            }
+        });
+
         fs.appendFileSync(logFile, `[API SUCCESS] Request Created\n`);
         return NextResponse.json({ success: true });
     } catch (error) {

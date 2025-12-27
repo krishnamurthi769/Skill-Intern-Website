@@ -45,7 +45,7 @@ export async function PATCH(
                 stage,
                 valuation: valuation ? Number(valuation) : undefined,
                 industry,
-                location
+                address: location
             }
         });
         return NextResponse.json({ startup });

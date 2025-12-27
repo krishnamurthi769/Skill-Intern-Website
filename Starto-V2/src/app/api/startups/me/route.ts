@@ -34,7 +34,9 @@ export async function PATCH(req: Request) {
     }
 
     // Extract location fields from body (sent by LocationSearchInput)
-    const { name, website, description, stage, valuation, industry, location, latitude, longitude, city, state, country, pincode, address } = body;
+    const { name, website, description, stage, valuation, industry, location, latitude, longitude, city, state, country, pincode, address, oneLiner } = body;
+
+    console.log("Startup Update Body:", { email, name, description });
 
     try {
         const user = await prisma.user.findUnique({ where: { email }, include: { startupProfile: true } });
@@ -44,27 +46,33 @@ export async function PATCH(req: Request) {
         }
 
         const startup = await prisma.startupProfile.update({
-            where: { id: user.startupProfile.id },
+            where: { ownerId: user.id },
             data: {
                 name,
                 website,
                 description,
-                stage,
+                oneLiner,
+                stage: stage ? stage.toUpperCase() : undefined, // Defensive: Ensure Enum match
+                isActive: true,
                 valuation: valuation ? Number(valuation) : undefined,
                 industry,
-                // Location Fields
+                // Location Fields (Display Only in Profile)
                 latitude,
                 longitude,
                 city,
                 state,
                 country,
                 pincode,
-                address: address || location // Fallback if just string sent
+                address: address || location
             }
         });
+
         return NextResponse.json({ startup });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error updating startup:", error);
-        return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
+        return NextResponse.json({
+            error: "Failed to update profile",
+            details: error.message
+        }, { status: 500 });
     }
 }

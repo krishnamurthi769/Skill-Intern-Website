@@ -23,7 +23,9 @@ import {
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
-export function PropertiesSection() {
+import { Suspense } from "react";
+
+function PropertiesList() {
     const router = useRouter()
     // In a real implementation, we would just read the search params to decide view
     // But for a true SPA feel inside the section, we can use local state OR params
@@ -125,6 +127,14 @@ export function PropertiesSection() {
                 ))}
             </div>
         </div>
+    )
+}
+
+export function PropertiesSection() {
+    return (
+        <Suspense fallback={<div>Loading properties...</div>}>
+            <PropertiesList />
+        </Suspense>
     )
 }
 

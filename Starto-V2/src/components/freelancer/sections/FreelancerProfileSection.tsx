@@ -9,8 +9,21 @@ import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { MapPin, Globe, PenTool, Figma, Code, Mail } from "lucide-react"
+import { useUser } from "@/hooks/useUser"
+import { useRouter } from "next/navigation"
+import { Loader2 } from "lucide-react"
 
 export function FreelancerProfileSection() {
+    const { dbUser, isLoading } = useUser();
+    const router = useRouter();
+
+    if (isLoading) {
+        return <div className="flex justify-center p-10"><Loader2 className="animate-spin h-8 w-8 text-primary" /></div>
+    }
+
+    const profile = dbUser?.freelancerProfile || {};
+    const skills = profile.skills || [];
+
     return (
         <div className="space-y-6 max-w-5xl">
             {/* Header / Banner */}
@@ -27,21 +40,21 @@ export function FreelancerProfileSection() {
                         <CardContent className="pt-6 text-center">
                             <div className="relative inline-block">
                                 <Avatar className="h-32 w-32 border-4 border-background mx-auto">
-                                    <AvatarImage src="/avatars/01.png" />
-                                    <AvatarFallback className="text-4xl bg-primary/10 text-primary">MK</AvatarFallback>
+                                    <AvatarImage src={dbUser?.image || "/avatars/01.png"} />
+                                    <AvatarFallback className="text-4xl bg-primary/10 text-primary">{dbUser?.name?.[0] || "U"}</AvatarFallback>
                                 </Avatar>
                                 <div className="absolute bottom-2 right-2 h-6 w-6 bg-green-500 rounded-full border-4 border-background" title="Available for work"></div>
                             </div>
 
-                            <h2 className="text-2xl font-bold mt-4">Manish K.</h2>
-                            <p className="text-muted-foreground font-medium">Senior Full Stack Developer</p>
+                            <h2 className="text-2xl font-bold mt-4">{dbUser?.name || "Your Name"}</h2>
+                            <p className="text-muted-foreground font-medium">{profile.headline || "Add a headline"}</p>
 
                             <div className="flex items-center justify-center gap-2 mt-2 text-sm text-muted-foreground">
-                                <MapPin className="h-4 w-4" /> Mumbai, India
+                                <MapPin className="h-4 w-4" /> {dbUser?.city || "City"}, {dbUser?.country || "Country"}
                             </div>
 
                             <div className="mt-6 flex flex-col gap-2">
-                                <Button>Edit Profile</Button>
+                                <Button onClick={() => router.push('/dashboard?section=settings')}>Edit Profile</Button>
                                 <Button variant="outline">Preview Public View</Button>
                             </div>
 
@@ -50,11 +63,11 @@ export function FreelancerProfileSection() {
                             <div className="space-y-4 text-left">
                                 <div>
                                     <Label className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Hourly Rate</Label>
-                                    <div className="font-semibold text-lg">₹ 3,500 <span className="text-sm font-normal text-muted-foreground">/ hr</span></div>
+                                    <div className="font-semibold text-lg">₹ {profile.hourlyRate || "0"} <span className="text-sm font-normal text-muted-foreground">/ hr</span></div>
                                 </div>
                                 <div>
                                     <Label className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Availability</Label>
-                                    <div className="font-semibold">30 hrs / week</div>
+                                    <div className="font-semibold">{profile.availability || "Full Time"}</div>
                                 </div>
                                 <div>
                                     <Label className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Languages</Label>
@@ -73,13 +86,11 @@ export function FreelancerProfileSection() {
                         </CardHeader>
                         <CardContent>
                             <div className="flex flex-wrap gap-2">
-                                <Badge variant="outline"><Code className="mr-1 h-3 w-3" /> React</Badge>
-                                <Badge variant="outline"><Code className="mr-1 h-3 w-3" /> Next.js</Badge>
-                                <Badge variant="outline"><Code className="mr-1 h-3 w-3" /> Node.js</Badge>
-                                <Badge variant="outline"><Code className="mr-1 h-3 w-3" /> TypeScript</Badge>
-                                <Badge variant="outline"><Figma className="mr-1 h-3 w-3" /> UI Design</Badge>
-                                <Badge variant="outline">TailwindCSS</Badge>
-                                <Badge variant="outline">PostgreSQL</Badge>
+                                {skills.length > 0 ? skills.map((skill: string) => (
+                                    <Badge key={skill} variant="outline"><Code className="mr-1 h-3 w-3" /> {skill}</Badge>
+                                )) : (
+                                    <span className="text-sm text-muted-foreground">No skills added yet.</span>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -92,14 +103,8 @@ export function FreelancerProfileSection() {
                             <CardTitle>About Me</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-muted-foreground leading-relaxed">
-                                I am a passionate Full Stack Developer with over 6 years of experience building scalable web applications.
-                                I specialize in the React ecosystem (Next.js) and Node.js backends. I have worked with startups to build
-                                MVPs from scratch and helped established companies refactor legacy codebases for better performance.
-                            </p>
-                            <p className="text-muted-foreground leading-relaxed mt-4">
-                                My approach fits perfectly with agile environments. I prioritize clean, maintainable code and solving
-                                real user problems over just "shipping features".
+                            <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                                {profile.bio || "Write something about yourself in settings..."}
                             </p>
                         </CardContent>
                     </Card>
@@ -110,28 +115,15 @@ export function FreelancerProfileSection() {
                             <Button variant="outline" size="sm">Add Project</Button>
                         </CardHeader>
                         <CardContent className="grid gap-6 md:grid-cols-2">
-                            {/* Portfolio Item 1 */}
+                            {/* Static Portfolio Items (Can be made dynamic later) */}
                             <div className="group border rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer">
                                 <div className="h-40 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                     <Globe className="h-10 w-10 text-muted-foreground" />
                                 </div>
                                 <div className="p-4">
-                                    <h3 className="font-semibold group-hover:text-primary transition-colors">Fintech Dashboard</h3>
+                                    <h3 className="font-semibold group-hover:text-primary transition-colors">Starto Project</h3>
                                     <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                        A comprehensive dashboard for tracking investments and crypto assets, built with Next.js and Recharts.
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Portfolio Item 2 */}
-                            <div className="group border rounded-xl overflow-hidden hover:shadow-md transition-all cursor-pointer">
-                                <div className="h-40 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                    <PenTool className="h-10 w-10 text-muted-foreground" />
-                                </div>
-                                <div className="p-4">
-                                    <h3 className="font-semibold group-hover:text-primary transition-colors">E-commerce UI Kit</h3>
-                                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                        A complete component library and design system for modern e-commerce stores using Tailwind CSS.
+                                        A sample project (Add your own soon)
                                     </p>
                                 </div>
                             </div>
@@ -143,27 +135,7 @@ export function FreelancerProfileSection() {
                             <CardTitle>Work History</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="flex gap-4">
-                                <div className="mt-1 bg-primary/10 p-2 rounded h-fit">
-                                    <Briefcase className="h-4 w-4 text-primary" />
-                                </div>
-                                <div>
-                                    <h4 className="font-semibold">Senior Frontend Engineer</h4>
-                                    <div className="text-sm text-muted-foreground">TechCorp Inc • 2021 - Present</div>
-                                    <p className="text-sm mt-2 text-muted-foreground">Led the migration of the main platform from Angular to React, improving load times by 40%.</p>
-                                </div>
-                            </div>
-                            <Separator />
-                            <div className="flex gap-4">
-                                <div className="mt-1 bg-primary/10 p-2 rounded h-fit">
-                                    <Briefcase className="h-4 w-4 text-primary" />
-                                </div>
-                                <div>
-                                    <h4 className="font-semibold">Web Developer</h4>
-                                    <div className="text-sm text-muted-foreground">Creative Agency • 2019 - 2021</div>
-                                    <p className="text-sm mt-2 text-muted-foreground">Built marketing websites and landing pages for over 20 clients using various CMS platforms.</p>
-                                </div>
-                            </div>
+                            <p className="text-muted-foreground text-sm">No work history added.</p>
                         </CardContent>
                     </Card>
                 </div>

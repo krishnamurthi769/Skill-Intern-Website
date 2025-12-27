@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
                             email,
                             name: firebaseUser.displayName || email.split("@")[0],
                             image: firebaseUser.photoUrl,
-                            role: "STARTUP", // Default Role
+                            // role: undefined, // Explicitly no default role
                             onboarded: false
                         }
                     });
@@ -82,16 +82,33 @@ export const authOptions: NextAuthOptions = {
             if (token.email) {
                 const dbUser = await prisma.user.findUnique({
                     where: { email: token.email as string },
-                    select: { activeRole: true, role: true }
+                    select: {
+                        activeRole: true,
+                        role: true,
+                        latitude: true,
+                        longitude: true,
+                        city: true,
+                        onboarded: true
+                    }
                 });
                 if (dbUser) {
                     token.activeRole = (dbUser.activeRole?.toLowerCase() as any) || undefined;
                     token.role = (dbUser.role?.toLowerCase() as any) || undefined;
+                    token.onboarded = dbUser.onboarded;
+
+                    // Location Sync (Nullable)
+                    token.latitude = dbUser.latitude;
+                    token.longitude = dbUser.longitude;
+                    token.city = dbUser.city;
                 }
             }
 
-            if (trigger === "update" && session?.activeRole) {
-                token.activeRole = session.activeRole;
+            if (trigger === "update") {
+                if (session?.activeRole) token.activeRole = session.activeRole;
+                if (session?.latitude) token.latitude = session.latitude;
+                if (session?.longitude) token.longitude = session.longitude;
+                if (session?.city) token.city = session.city;
+                if (session?.onboarded) token.onboarded = session.onboarded;
             }
             return token;
         },
@@ -100,6 +117,12 @@ export const authOptions: NextAuthOptions = {
                 session.user.id = token.id as string;
                 (session.user as any).role = token.role;
                 (session.user as any).activeRole = token.activeRole;
+
+                // Expose Location to Client
+                session.user.latitude = token.latitude;
+                session.user.longitude = token.longitude;
+                session.user.city = token.city;
+                (session.user as any).onboarded = token.onboarded;
             }
             return session;
         }

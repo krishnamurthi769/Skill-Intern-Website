@@ -13,14 +13,14 @@ export default function OnboardingLayout({
     return (
         <div className="min-h-screen flex flex-col bg-muted/30">
             {/* Simplified Header */}
-            <header className="h-16 border-b bg-background/80 backdrop-blur fixed top-0 w-full z-10 flex items-center justify-between px-6">
+            <header className="h-16 border-b bg-background/80 backdrop-blur fixed top-0 w-full z-10 flex items-center justify-between px-4 md:px-6">
                 <Link href="/" className="flex items-center gap-2 opacity-90 hover:opacity-100 transition-opacity">
                     <Image
-                        src="/logo-v3.png"
+                        src="/logo-v2.png"
                         alt="Starto"
                         width={240}
                         height={80}
-                        className="h-10 md:h-12 w-auto object-contain"
+                        className="h-12 md:h-14 w-auto object-contain dark:invert"
                         priority
                     />
                 </Link>

@@ -60,7 +60,7 @@ export function RoleAvatar({ className }: RoleAvatarProps) {
             className={cn("cursor-pointer group relative", className)}
             title={`View ${currentConfig.label}`}
         >
-            <Avatar className={cn("h-10 w-10 border border-border shadow-sm transition-all group-hover:ring-2 group-hover:ring-primary/20", className)}>
+            <Avatar className={cn("h-10 w-10 border border-border dark:border-gray-700 shadow-sm transition-all group-hover:ring-2 group-hover:ring-primary/20", className)}>
                 <AvatarImage src={user.image || ""} alt={user.name || "User"} />
                 <AvatarFallback className="bg-primary/5 text-primary font-medium">
                     {user.name?.slice(0, 2).toUpperCase() || "ME"}

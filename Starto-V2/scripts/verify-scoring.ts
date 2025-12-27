@@ -95,7 +95,7 @@ async function main() {
 
     console.log("🏆 Results Ranked by Score:\n");
     results.forEach((r, i) => {
-        console.log(`#${i + 1} ${r.candidate.name}`);
+        console.log(`#${i + 1} ${(r.candidate as any).name}`);
         console.log(`   Distance: ${r.distanceKm.toFixed(2)} km`);
         console.log(`   Total Score: ${r.score}`);
         console.log(`   Breakdown:`, r.breakdown);

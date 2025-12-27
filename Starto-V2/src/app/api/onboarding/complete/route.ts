@@ -28,26 +28,8 @@ export async function POST(req: Request) {
             address: data.address, // Display Only
         };
 
-        // 0. Update Base User Data (Name, Phone, Active Role)
-        const roleToActiveRole: Record<string, string> = {
-            "startup": "STARTUP",
-            "freelancer": "FREELANCER",
-            "investor": "INVESTOR",
-            "provider": "PROVIDER" // or SPACE_PROVIDER if enum differs? checked schema: PROVIDER
-        };
-
-        const targetActiveRole = roleToActiveRole[role];
-
-        if (data.name || data.phoneNumber || targetActiveRole) {
-            await prisma.user.update({
-                where: { id: user.id },
-                data: {
-                    name: data.name || undefined,
-                    phoneNumber: data.phoneNumber || undefined,
-                    activeRole: targetActiveRole || undefined
-                }
-            });
-        }
+        // REMOVED: User Table updates. This endpoint is now strictly for Role Profile updates.
+        // Clients must call PATCH /api/users/me for Base User Data (Name, Phone, Location, Active Role, Onboarded).
 
         // 1. Update the specific profile
         if (role === "startup") {
@@ -67,7 +49,6 @@ export async function POST(req: Request) {
                     description: data.description,
                     website: data.website,
                     isActive: true, // Mark as Active
-                    ...locationData,
                 },
             });
             log("STARTUP_UPDATE_SUCCESS", {});
@@ -86,7 +67,6 @@ export async function POST(req: Request) {
                     github: data.github,
                     linkedin: data.linkedin,
                     isActive: true, // Mark as Active
-                    ...locationData,
                 },
             });
             log("FREELANCER_UPDATE_SUCCESS", {});
@@ -109,11 +89,9 @@ export async function POST(req: Request) {
                         maxTicketSize: data.maxTicketSize ? Number(data.maxTicketSize) : undefined,
                         sectors: data.sectors,
                         stages: data.stages,
-                        stages: data.stages,
                         isPublic: true,
                         isActive: true, // Mark as Active
                         thesisNote: data.thesisNote,
-                        ...locationData,
                     },
                     create: {
                         userId: user.id,
@@ -125,7 +103,6 @@ export async function POST(req: Request) {
                         isPublic: true,
                         isActive: true, // Mark as Active
                         thesisNote: data.thesisNote,
-                        ...locationData,
                     }
                 });
                 log("INVESTOR_UPDATE_SUCCESS", {});
@@ -146,7 +123,6 @@ export async function POST(req: Request) {
                     priceUnit: data.priceUnit,
                     description: data.description,
                     isActive: true, // Mark as Active
-                    ...locationData,
                 },
                 create: {
                     userId: user.id,
@@ -158,30 +134,36 @@ export async function POST(req: Request) {
                     priceUnit: data.priceUnit,
                     description: data.description,
                     isActive: true, // Mark as Active
-                    ...locationData,
                 }
             });
             log("PROVIDER_UPDATE_SUCCESS", {});
         }
 
-        // 2. Mark User as Onboarded AND Save Phone Number AND Set Active Role
-        // Note: data.phoneNumber should be passed from frontend
+        // REMOVED: Final User table update (onboarded, activeRole, phone, location).
+        // This responsibility has moved to PATCH /api/users/me
 
-        let activeRoleEnum;
-        if (role === 'startup') activeRoleEnum = 'STARTUP';
-        else if (role === 'freelancer') activeRoleEnum = 'FREELANCER';
-        else if (role === 'investor') activeRoleEnum = 'INVESTOR';
-        else if (role === 'provider') activeRoleEnum = 'PROVIDER';
+        // 2. Handle Referral Attribution
+        // We do this server-side via cookie to ensure attribution even if client doesn't pass it
+        try {
+            const { cookies } = await import("next/headers");
+            const cookieStore = await cookies(); // await for Next.js 15+ compat
+            const inviteCode = cookieStore.get("starto_invite_code")?.value;
 
-        await prisma.user.update({
-            where: { email },
-            data: {
-                onboarded: true,
-                phoneNumber: data.phoneNumber, // Save for WhatsApp Link
-                activeRole: activeRoleEnum as any, // Generic enum cast
-                role: activeRoleEnum as any // SYNC legacy role for NextAuth Session
-            },
-        });
+            if (inviteCode && !user.referredById) {
+                const invite = await prisma.invite.findUnique({ where: { code: inviteCode } });
+                // Prevent self-referral
+                if (invite && invite.inviterId !== user.id) {
+                    await prisma.user.update({
+                        where: { id: user.id },
+                        data: { referredById: invite.inviterId }
+                    });
+                    log("REFERRAL_ATTRIBUTED", { userId: user.id, inviterId: invite.inviterId, code: inviteCode });
+                }
+            }
+        } catch (refError) {
+            // Non-blocking error
+            console.error("Referral Attribution Failed", refError);
+        }
 
         return NextResponse.json({ success: true });
     } catch (error: any) {

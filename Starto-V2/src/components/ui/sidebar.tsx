@@ -1,13 +1,16 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname, useSearchParams } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { useState, useEffect } from "react"
+import { LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { roleNavigation } from "@/config/navigation"
 import { UserRole } from "@/types/starto"
 import { Button } from "@/components/ui/button"
+import { SupportButton } from "@/components/support/SupportButton"
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> { }
 
@@ -18,7 +21,7 @@ export function Sidebar({ className }: SidebarProps) {
     const currentSection = searchParams.get("section")
 
     // Optimized Role Detection (Single Source of Truth)
-    const role = (session?.user as any)?.activeRole?.toLowerCase() as UserRole || "startup";
+    const role = (session?.user as any)?.activeRole?.toLowerCase() as UserRole;
 
     if (!role || !roleNavigation[role]) return null
 
@@ -28,12 +31,15 @@ export function Sidebar({ className }: SidebarProps) {
         <div className={cn("pb-12 min-h-screen border-r bg-background", className)}>
             <div className="space-y-4 py-4">
                 <div className="px-3 py-2">
-                    <Link href="/" className="flex items-center pl-3 mb-6">
-                        {/* Replace with actual Logo component if available, using text for now but styled as Logo */}
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold mr-2">
-                            S
-                        </div>
-                        <span className="text-xl font-bold tracking-tight">Starto</span>
+                    <Link href="/" className="flex items-center pl-2 mb-6 group cursor-pointer block">
+                        <Image
+                            src="/logo-v2.png"
+                            alt="Starto"
+                            width={140}
+                            height={48}
+                            className="h-12 w-auto object-contain dark:invert transition-transform group-hover:scale-105"
+                            priority
+                        />
                     </Link>
                     <div className="space-y-1">
                         {items.map((item) => {
@@ -59,6 +65,17 @@ export function Sidebar({ className }: SidebarProps) {
                                 </Button>
                             )
                         })}
+                    </div>
+                    <div className="mt-8 pt-4 border-t space-y-1">
+                        <Button
+                            variant="ghost"
+                            className="w-full justify-start text-muted-foreground hover:text-foreground"
+                            onClick={() => signOut({ callbackUrl: "/" })}
+                        >
+                            <LogOut className="mr-2 h-4 w-4" />
+                            Log out
+                        </Button>
+                        <SupportButton />
                     </div>
                 </div>
             </div>

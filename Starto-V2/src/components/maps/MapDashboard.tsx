@@ -27,7 +27,7 @@ export default function MapDashboard({
     onCenterChange?: (center: { lat: number; lng: number }) => void;
 }) {
     const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
-    const { isLoaded } = useJsApiLoader({ id: "google-map-script", googleMapsApiKey: key, libraries: ["places"] });
+    const { isLoaded } = useJsApiLoader({ id: "starto-map-script", googleMapsApiKey: key, libraries: ["places"] });
     const [internalPoints, setInternalPoints] = useState<NearbyPoint[]>([]);
     const [selectedPoint, setSelectedPoint] = useState<NearbyPoint | null>(null);
 

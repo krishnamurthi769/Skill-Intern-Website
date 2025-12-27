@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { GoogleMap, Marker, useJsApiLoader, Circle, InfoWindow } from "@react-google-maps/api";
+import { useTheme } from "next-themes";
 import { BRAND_MAP_STYLE, FUNCTIONAL_MAP_STYLE, HERO_MAP_STYLE, HERO_MAP_STYLE_LIGHT } from "./map-styles";
 import ConnectionButton from "@/components/connections/ConnectionButton";
 import { motion } from "framer-motion";
@@ -80,6 +81,7 @@ export default function StartoMap({
         libraries: LIBRARIES
     });
 
+    const { resolvedTheme } = useTheme();
     const mapRef = useRef<google.maps.Map | null>(null);
     const [internalPoints, setInternalPoints] = useState<NearbyPoint[]>([]);
     const [selectedPoint, setSelectedPoint] = useState<NearbyPoint | null>(null);
@@ -150,12 +152,15 @@ export default function StartoMap({
     let points: NearbyPoint[] = [];
     if (mode === "functional") points = externalPoints || internalPoints;
     if (mode === "brand") points = BRAND_POINTS;
-    if (mode === "hero") points = HERO_POINTS;
+    if (mode === "hero") points = externalPoints || HERO_POINTS;
+
 
     // Determine Style
     let mapStyle: any[] = FUNCTIONAL_MAP_STYLE;
     if (mode === "brand") mapStyle = BRAND_MAP_STYLE;
-    if (mode === "hero") mapStyle = HERO_MAP_STYLE_LIGHT; // Use Light Theme
+    if (mode === "hero") {
+        mapStyle = resolvedTheme === "dark" ? HERO_MAP_STYLE : HERO_MAP_STYLE_LIGHT;
+    }
 
     // Determine Zoom & Center
     const currentZoom = mode === "hero" ? HERO_ZOOM : (mode === "brand" ? BRAND_ZOOM : FUNCTIONAL_ZOOM);
@@ -246,10 +251,13 @@ export default function StartoMap({
                             icon={mode === "functional" ? undefined : getIcon(p.type)}
                             label={mode === "hero" ? {
                                 text: p.type ? (p.type.charAt(0).toUpperCase() + p.type.slice(1)) : "",
-                                color: "black", // Dark text for Light Map
+                                color: resolvedTheme === "dark" ? "white" : "black",
                                 fontSize: "11px",
                                 fontWeight: "bold",
-                                className: "bg-white/90 px-2 py-0.5 rounded shadow-sm -mt-10 font-bold tracking-wide border border-gray-200"
+                                className: `px-2 py-0.5 rounded shadow-sm -mt-10 font-bold tracking-wide border ${resolvedTheme === "dark"
+                                    ? "bg-black/90 border-gray-700 text-white"
+                                    : "bg-white/90 border-gray-200 text-black"
+                                    }`
                             } : undefined}
                             onClick={() => mode === "functional" && setSelectedPoint(p)}
                         />

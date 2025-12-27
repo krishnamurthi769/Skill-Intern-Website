@@ -3,7 +3,6 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import LocationSelector from "@/components/location/LocationSelector";
 import MultiSelect from "@/components/ui/MultiSelect";
 import {
     SKILLS,
@@ -19,29 +18,25 @@ import {
     PROVIDER_TYPES
 } from "@/lib/constants";
 
-// Helper to map UI labels to Schema Enums (e.g. "Full-time" -> "FULL_TIME")
+// Helper to map UI labels to Schema Enums
 const mapToEnum = (val: string) => {
     if (!val) return undefined;
-    // Edge case for ProviderType
     if (val === "Co-working") return "COWORKING";
-
-    return val
-        .replace(/\+/g, "_PLUS")
-        .replace(/[-\s]/g, "_")
-        .toUpperCase();
+    return val.replace(/\+/g, "_PLUS").replace(/[-\s]/g, "_").toUpperCase();
 };
 
 export default function OnboardingProfilePage() {
-    const { data: session, status } = useSession();
+    const { data: session, status, update } = useSession();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+
     const activeRole = (session?.user as any)?.activeRole?.toLowerCase();
 
     useEffect(() => {
         if (status === "unauthenticated") {
             router.push("/login");
         } else if (status === "authenticated" && !activeRole) {
-            router.push("/onboarding");
+            router.push("/onboarding/role");
         }
     }, [status, activeRole, router]);
 
@@ -52,27 +47,82 @@ export default function OnboardingProfilePage() {
     const handleSubmit = async (formData: any) => {
         setLoading(true);
         try {
-            const res = await fetch("/api/onboarding/complete", {
+            // VALIDATION: Strict checks before sending anything
+            if (activeRole === "freelancer" && (!formData.skills || formData.skills.length === 0)) {
+                alert("Please select at least one skill.");
+                setLoading(false);
+                return;
+            }
+            if (activeRole === "investor" && (!formData.sectors || formData.sectors.length === 0)) {
+                alert("Please select at least one sector of interest.");
+                setLoading(false);
+                return;
+            }
+            if (activeRole === "investor" && (!formData.stages || formData.stages.length === 0)) {
+                alert("Please select at least one stage preference.");
+                setLoading(false);
+                return;
+            }
+
+            // 1. Prepare Profile Data
+            const profileData = { ...formData };
+
+            // STEP 1: Update Role Profile (CRITICAL: Do this BEFORE marking onboarded)
+            const profileRes = await fetch("/api/onboarding/complete", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     email: session?.user?.email,
                     role: activeRole,
-                    data: formData,
+                    data: profileData,
                 }),
             });
 
-            if (!res.ok) throw new Error("Failed to save profile");
+            if (!profileRes.ok) {
+                const err = await profileRes.json();
+                throw new Error(err.error || "Failed to save profile details");
+            }
 
+            // 2. Prepare User Data (Name, Phone, Onboarded Status)
+            const userPayload = {
+                name: formData.name,
+                phoneNumber: formData.phoneNumber,
+                activeRole: activeRole.toUpperCase(), // Enum format
+                onboarded: true, // Only set this after profile success
+            };
+
+            // If form has 'name' (Startup/Investor/Provider), add it.
+            if (formData.name) {
+                // @ts-ignore
+                userPayload.name = formData.name;
+            }
+
+            // STEP 2: Update User Table (Canonical)
+            const userRes = await fetch("/api/users/me", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(userPayload)
+            });
+
+            if (!userRes.ok) throw new Error("Failed to update user status");
+
+            // Sync Session (Important to pass Middleware Guard)
+            await update({
+                onboarded: true,
+                activeRole: activeRole // Ensure role is sticky
+            });
+
+            // Redirect to Dashboard (Flow Complete)
             router.push("/dashboard");
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert("Error saving profile. Please try again.");
+            alert(error.message || "Error saving profile. Please try again.");
         } finally {
             setLoading(false);
         }
     };
 
+    // STEP 2: Role Specific Details
     return (
         <div className="min-h-screen bg-background text-foreground py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
@@ -101,37 +151,18 @@ function FreelancerForm({ onSubmit, loading }: { onSubmit: (data: any) => void, 
         headline: "",
         phoneNumber: "",
         skills: [] as string[],
-        experience: "Mid",
-        availability: "Full-time",
-        workType: "Remote",
+        experience: "",
+        availability: "",
+        workType: "",
         portfolio: "",
         github: "",
         linkedin: "",
-        latitude: null as number | null,
-        longitude: null as number | null,
-        city: "",
-        state: "",
-        country: "",
-        pincode: "",
-        address: "",
     });
-
-    const handleLocationSelect = (loc: any) => {
-        setFormData(prev => ({
-            ...prev,
-            latitude: loc.latitude,
-            longitude: loc.longitude,
-            address: loc.address,
-            city: loc.city || "",
-            state: loc.state || "",
-            country: loc.country || "",
-            pincode: loc.pincode || ""
-        }));
-    };
 
     return (
         <form onSubmit={(e) => {
-            e.preventDefault(); onSubmit({
+            e.preventDefault();
+            onSubmit({
                 ...formData,
                 experience: mapToEnum(formData.experience),
                 availability: mapToEnum(formData.availability),
@@ -143,7 +174,7 @@ function FreelancerForm({ onSubmit, loading }: { onSubmit: (data: any) => void, 
                 <input
                     type="text"
                     placeholder="e.g. Full-stack Developer | Next.js Expert"
-                    className="w-full p-3 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all"
+                    className="w-full p-3 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary outline-none"
                     value={formData.headline}
                     onChange={e => setFormData({ ...formData, headline: e.target.value })}
                     required
@@ -218,7 +249,7 @@ function FreelancerForm({ onSubmit, loading }: { onSubmit: (data: any) => void, 
             </div>
 
             <div>
-                <label className="block text-sm font-medium mb-2">WhatsApp Number (Required for connections)</label>
+                <label className="block text-sm font-medium mb-2">WhatsApp Number (Required)</label>
                 <input
                     type="tel"
                     placeholder="+91 98765 43210"
@@ -229,25 +260,12 @@ function FreelancerForm({ onSubmit, loading }: { onSubmit: (data: any) => void, 
                 />
             </div>
 
-            <div>
-                <label className="block text-sm font-medium mb-2">Location</label>
-                <div className="space-y-4">
-                    <LocationSelector onSelect={handleLocationSelect} />
-                    <div className="grid grid-cols-2 gap-4">
-                        <input placeholder="City" className="w-full p-3 bg-background border border-input rounded-xl outline-none" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
-                        <input placeholder="State" className="w-full p-3 bg-background border border-input rounded-xl outline-none" value={formData.state} onChange={e => setFormData({ ...formData, state: e.target.value })} />
-                        <input placeholder="Country" className="w-full p-3 bg-background border border-input rounded-xl outline-none" value={formData.country} onChange={e => setFormData({ ...formData, country: e.target.value })} />
-                        <input placeholder="Pincode" className="w-full p-3 bg-background border border-input rounded-xl outline-none" value={formData.pincode} onChange={e => setFormData({ ...formData, pincode: e.target.value })} />
-                    </div>
-                </div>
-            </div>
-
             <button
                 type="submit"
                 disabled={loading}
                 className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50"
             >
-                {loading ? "Saving Profile..." : "Complete Onboarding"}
+                {loading ? "Saving Profile..." : "Complete Profile"}
             </button>
         </form>
     );
@@ -258,42 +276,17 @@ function StartupForm({ onSubmit, loading }: { onSubmit: (data: any) => void, loa
         name: "",
         phoneNumber: "",
         oneLiner: "",
-        industry: "SaaS",
-        stage: "Idea",
-        teamSize: "1-10",
-        fundingRound: "Bootstrapped",
-        minHiringBudget: 0,
-        maxHiringBudget: 0,
-        description: "",
+        industry: "",
+        stage: "",
         website: "",
-        latitude: null as number | null,
-        longitude: null as number | null,
-        city: "",
-        state: "",
-        country: "",
-        pincode: "",
-        address: "",
     });
-
-    const handleLocationSelect = (loc: any) => {
-        setFormData(prev => ({
-            ...prev,
-            latitude: loc.latitude,
-            longitude: loc.longitude,
-            address: loc.address,
-            city: loc.city || "",
-            state: loc.state || "",
-            country: loc.country || "",
-            pincode: loc.pincode || ""
-        }));
-    };
 
     return (
         <form onSubmit={(e) => {
-            e.preventDefault(); onSubmit({
+            e.preventDefault();
+            onSubmit({
                 ...formData,
                 stage: mapToEnum(formData.stage),
-                fundingRound: mapToEnum(formData.fundingRound),
             });
         }} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -328,7 +321,9 @@ function StartupForm({ onSubmit, loading }: { onSubmit: (data: any) => void, loa
                     value={formData.oneLiner}
                     onChange={e => setFormData({ ...formData, oneLiner: e.target.value })}
                     required
+                    maxLength={140}
                 />
+                <p className="text-xs text-muted-foreground mt-1 text-right">{formData.oneLiner.length}/140</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -339,6 +334,7 @@ function StartupForm({ onSubmit, loading }: { onSubmit: (data: any) => void, loa
                         value={formData.industry}
                         onChange={e => setFormData({ ...formData, industry: e.target.value })}
                     >
+                        <option value="">Select Industry</option>
                         {INDUSTRIES.map(ind => <option key={ind} value={ind}>{ind}</option>)}
                     </select>
                 </div>
@@ -349,50 +345,21 @@ function StartupForm({ onSubmit, loading }: { onSubmit: (data: any) => void, loa
                         value={formData.stage}
                         onChange={e => setFormData({ ...formData, stage: e.target.value })}
                     >
+                        <option value="">Select Stage</option>
                         {STARTUP_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label className="block text-sm font-medium mb-2">Team Size</label>
-                    <select
-                        className="w-full p-3 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary outline-none"
-                        value={formData.teamSize}
-                        onChange={e => setFormData({ ...formData, teamSize: e.target.value })}
-                    >
-                        {TEAM_SIZES.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                </div>
-                <div>
-                    <label className="block text-sm font-medium mb-2">Funding Status</label>
-                    <select
-                        className="w-full p-3 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary outline-none"
-                        value={formData.fundingRound}
-                        onChange={e => setFormData({ ...formData, fundingRound: e.target.value })}
-                    >
-                        {FUNDING_ROUNDS.map(r => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                </div>
-            </div>
-
             <div>
-                <label className="block text-sm font-medium mb-2">Detailed Description</label>
-                <textarea
-                    rows={4}
+                <label className="block text-sm font-medium mb-2">Website (Optional)</label>
+                <input
+                    type="url"
                     className="w-full p-3 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary outline-none"
-                    value={formData.description}
-                    onChange={e => setFormData({ ...formData, description: e.target.value })}
-                    required
+                    value={formData.website}
+                    onChange={e => setFormData({ ...formData, website: e.target.value })}
+                    placeholder="https://"
                 />
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium mb-2">Location</label>
-                <div className="space-y-4">
-                    <LocationSelector onSelect={handleLocationSelect} />
-                </div>
             </div>
 
             <button
@@ -400,7 +367,7 @@ function StartupForm({ onSubmit, loading }: { onSubmit: (data: any) => void, loa
                 disabled={loading}
                 className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg disabled:opacity-50"
             >
-                {loading ? "Launching..." : "Complete Onboarding"}
+                {loading ? "Launching..." : "Enter Starto"}
             </button>
         </form>
     );
@@ -410,36 +377,17 @@ function InvestorForm({ onSubmit, loading }: { onSubmit: (data: any) => void, lo
     const [formData, setFormData] = useState({
         name: "",
         phoneNumber: "",
-        investorType: "Angel",
+        investorType: "",
         sectors: [] as string[],
         stages: [] as string[],
         thesisNote: "",
         isPublic: true,
-        latitude: null as number | null,
-        longitude: null as number | null,
-        city: "",
-        state: "",
-        country: "",
-        pincode: "",
-        address: "",
     });
-
-    const handleLocationSelect = (loc: any) => {
-        setFormData(prev => ({
-            ...prev,
-            latitude: loc.latitude,
-            longitude: loc.longitude,
-            address: loc.address,
-            city: loc.city || "",
-            state: loc.state || "",
-            country: loc.country || "",
-            pincode: loc.pincode || ""
-        }));
-    };
 
     return (
         <form onSubmit={(e) => {
-            e.preventDefault(); onSubmit({
+            e.preventDefault();
+            onSubmit({
                 ...formData,
                 investorType: mapToEnum(formData.investorType),
                 stages: formData.stages.map(s => mapToEnum(s)),
@@ -507,17 +455,12 @@ function InvestorForm({ onSubmit, loading }: { onSubmit: (data: any) => void, lo
                 />
             </div>
 
-            <div>
-                <label className="block text-sm font-medium mb-2">Location</label>
-                <LocationSelector onSelect={handleLocationSelect} />
-            </div>
-
             <button
                 type="submit"
                 disabled={loading}
                 className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg disabled:opacity-50"
             >
-                {loading ? "Processing..." : "Finish Onboarding"}
+                {loading ? "Processing..." : "Next Step"}
             </button>
         </form>
     );
@@ -528,34 +471,15 @@ function ProviderForm({ onSubmit, loading }: { onSubmit: (data: any) => void, lo
         name: "",
         phoneNumber: "",
         companyName: "",
-        providerType: "Co-working",
+        providerType: "",
         description: "",
         capacity: 10,
-        latitude: null as number | null,
-        longitude: null as number | null,
-        city: "",
-        state: "",
-        country: "",
-        pincode: "",
-        address: "",
     });
-
-    const handleLocationSelect = (loc: any) => {
-        setFormData(prev => ({
-            ...prev,
-            latitude: loc.latitude,
-            longitude: loc.longitude,
-            address: loc.address,
-            city: loc.city || "",
-            state: loc.state || "",
-            country: loc.country || "",
-            pincode: loc.pincode || ""
-        }));
-    };
 
     return (
         <form onSubmit={(e) => {
-            e.preventDefault(); onSubmit({
+            e.preventDefault();
+            onSubmit({
                 ...formData,
                 providerType: mapToEnum(formData.providerType),
             });
@@ -623,11 +547,6 @@ function ProviderForm({ onSubmit, loading }: { onSubmit: (data: any) => void, lo
                     value={formData.description}
                     onChange={e => setFormData({ ...formData, description: e.target.value })}
                 />
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium mb-2">Location</label>
-                <LocationSelector onSelect={handleLocationSelect} />
             </div>
 
             <button

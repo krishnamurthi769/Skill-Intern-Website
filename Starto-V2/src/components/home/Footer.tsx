@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export function Footer() {
+    const { data: session } = useSession();
+    const platformHref = session ? "/dashboard" : "/login";
+
     return (
         <footer className="border-t bg-muted/20">
             <div className="container px-4 md:px-6 mx-auto py-12">
@@ -14,27 +20,24 @@ export function Footer() {
                     <div>
                         <h4 className="font-semibold mb-4">Platform</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="/startup">Founders</Link></li>
-                            <li><Link href="/freelancer">Freelancers</Link></li>
-                            <li><Link href="/investor">Investors</Link></li>
-                            <li><Link href="/provider">Space Providers</Link></li>
+                            <li><Link href={platformHref}>Founders</Link></li>
+                            <li><Link href={platformHref}>Freelancers</Link></li>
+                            <li><Link href={platformHref}>Investors</Link></li>
+                            <li><Link href={platformHref}>Space Providers</Link></li>
                         </ul>
                     </div>
                     <div>
                         <h4 className="font-semibold mb-4">Company</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li><Link href="/about">About Us</Link></li>
-                            <li><Link href="#">Careers</Link></li>
-                            <li><Link href="/blog">Blog</Link></li>
                             <li><Link href="/contact">Contact</Link></li>
                         </ul>
                     </div>
                     <div>
                         <h4 className="font-semibold mb-4">Legal</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><Link href="#">Privacy Policy</Link></li>
-                            <li><Link href="#">Terms of Service</Link></li>
-                            <li><Link href="#">Cookie Policy</Link></li>
+                            <li><Link href="/privacy">Privacy Policy</Link></li>
+                            <li><Link href="/terms">Terms of Service</Link></li>
                         </ul>
                     </div>
                 </div>

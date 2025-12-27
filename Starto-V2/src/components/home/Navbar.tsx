@@ -15,7 +15,14 @@ import {
     Briefcase,
     TrendingUp,
     Building2,
-    CheckCircle2
+    CheckCircle2,
+    LayoutDashboard,
+    Globe,
+    MapPin,
+    Users,
+    User,
+    Settings,
+    LogOut
 } from "lucide-react";
 
 const roles = [
@@ -48,6 +55,15 @@ const roles = [
 import { useSession, signOut } from "next-auth/react";
 import { UserNav } from "./UserNav";
 
+const navItems = [
+    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { label: "Explore Market", href: "/explore", icon: Globe },
+    { label: "Nearby", href: "/nearby", icon: MapPin },
+    { label: "Connections", href: "/dashboard/connections", icon: Users },
+    { label: "Profile", href: "/dashboard/profile", icon: User },
+    { label: "Settings", href: "/dashboard/settings", icon: Settings },
+];
+
 export function Navbar() {
     const { data: session, status } = useSession();
     const [isScrolled, setIsScrolled] = React.useState(false);
@@ -78,8 +94,8 @@ export function Navbar() {
             className={cn(
                 "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b",
                 isScrolled
-                    ? "bg-white/90 backdrop-blur-md border-gray-200 shadow-sm py-3"
-                    : "bg-white/70 backdrop-blur-md border-gray-200/50 py-4"
+                    ? "bg-background/90 backdrop-blur-md border-border shadow-sm py-3"
+                    : "bg-background/70 backdrop-blur-md border-border/50 py-4"
             )}
             initial={{ y: -100 }}
             animate={{ y: 0 }}
@@ -87,20 +103,20 @@ export function Navbar() {
         >
             <div className="container px-4 md:px-6 mx-auto flex items-center justify-between">
                 {/* LEFT: Logo */}
-                <Link href="/" className="flex items-center gap-2 group">
+                <Link href="/" className="flex items-center gap-2 group cursor-pointer">
                     <Image
                         src="/logo-v2.png"
                         alt="Starto"
                         width={240}
                         height={80}
-                        className="h-10 md:h-15 w-auto object-contain transition-transform group-hover:scale-105"
+                        className="h-10 md:h-14 w-auto object-contain transition-transform group-hover:scale-105 dark:invert"
                         priority
                     />
                 </Link>
 
                 {/* CENTER: Navigation (Desktop) */}
                 <nav className="hidden md:flex items-center gap-1">
-                    <NavItem href="#features">Features</NavItem>
+                    <NavItem href="/features">Features</NavItem>
                     {/* Roles Dropdown */}
                     <div
                         className="relative group px-3 py-2"
@@ -141,13 +157,20 @@ export function Navbar() {
                         </AnimatePresence>
                     </div>
 
-                    <NavItem href="#about">About</NavItem>
+                    <NavItem href="/about">About</NavItem>
                 </nav>
 
                 {/* RIGHT: CTA */}
                 <div className="hidden md:flex items-center gap-4">
                     {user ? (
-                        <UserNav />
+                        <div className="flex items-center gap-4">
+                            {!pathname?.startsWith("/dashboard") && (
+                                <Button size="sm" variant="outline" className="rounded-full px-6 font-semibold hidden md:flex" asChild>
+                                    <Link href="/dashboard">Go to Dashboard</Link>
+                                </Button>
+                            )}
+                            <UserNav />
+                        </div>
                     ) : (
                         <>
                             <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
@@ -169,81 +192,112 @@ export function Navbar() {
                 </button>
             </div>
 
-            {/* Mobile Drawer */}
+            {/* Mobile Drawer (Full Screen / Large) */}
             <AnimatePresence>
                 {mobileMenuOpen && (
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[60]"
-                            onClick={() => setMobileMenuOpen(false)}
-                        />
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm" // Increased z-index & opacity
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
                         <motion.div
                             initial={{ x: "100%" }}
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
-                            transition={{ type: "spring", damping: 20 }}
-                            className="fixed top-0 right-0 bottom-0 w-[300px] bg-background border-l border-border z-[70] p-6 shadow-2xl flex flex-col"
+                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            className="absolute top-0 right-0 bottom-0 w-full sm:w-[400px] bg-white dark:bg-zinc-950 border-l shadow-2xl flex flex-col h-full z-[10000]"
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="flex items-center justify-between mb-8">
-                                <span className="font-bold text-xl">Starto</span>
-                                <button onClick={() => setMobileMenuOpen(false)} className="p-2 hover:bg-muted rounded-full">
-                                    <X className="w-5 h-5" />
-                                </button>
+                            {/* Header */}
+                            <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800">
+                                <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+                                    <Image
+                                        src="/logo-v2.png"
+                                        alt="Starto"
+                                        width={140}
+                                        height={45}
+                                        className="h-10 w-auto object-contain dark:invert"
+                                    />
+                                </Link>
+                                <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} className="rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900">
+                                    <X className="w-6 h-6 text-zinc-900 dark:text-zinc-100" />
+                                </Button>
                             </div>
 
-                            <div className="flex flex-col gap-6 flex-1 overflow-y-auto">
-                                <div className="flex flex-col gap-4 border-b pb-6">
-                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Menu</span>
-                                    {user && (
-                                        <Link href="/login" className="text-lg font-medium text-primary">Dashboard</Link>
-                                    )}
-                                    <Link href="#features" className="text-lg font-medium">Features</Link>
+                            {/* Scrollable Content */}
+                            <div className="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-8">
 
-                                    <Link href="#about" className="text-lg font-medium">About</Link>
-                                </div>
-
-                                <div className="flex flex-col gap-3">
-                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Roles</span>
-                                    {roles.map(role => (
-                                        <Link key={role.title} href={role.href} className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg -mx-2">
-                                            <role.icon className="w-5 h-5 text-primary" />
-                                            <span className="font-medium">{role.title}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="mt-auto pt-6 border-t flex flex-col gap-3">
-                                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mb-2">
-                                    <span>🇮🇳 Made in India</span>
-                                    <span>•</span>
-                                    <span>AI Powered</span>
-                                </div>
                                 {user ? (
+                                    /* AUTHENTICATED MENU */
                                     <div className="flex flex-col gap-2">
-                                        <div className="text-sm font-medium text-center text-muted-foreground mb-2">
-                                            Signed in as {user.email}
+                                        <div className="px-2 mb-2 text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                                            My Account
                                         </div>
-                                        <Button variant="outline" className="w-full rounded-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700" onClick={() => signOut({ callbackUrl: "/" })}>
-                                            Log out
-                                        </Button>
+                                        {navItems.map((item) => (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                className="flex items-center gap-4 p-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 active:bg-zinc-200 transition-colors text-zinc-900 dark:text-zinc-100"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 text-primary">
+                                                    <item.icon className="w-5 h-5" />
+                                                </div>
+                                                <span className="font-semibold text-lg">{item.label}</span>
+                                            </Link>
+                                        ))}
+
+                                        <button
+                                            onClick={() => signOut()}
+                                            className="flex items-center gap-4 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/10 text-red-600 dark:text-red-400 transition-colors w-full text-left"
+                                        >
+                                            <div className="p-2 rounded-lg bg-red-50 dark:bg-red-900/10">
+                                                <LogOut className="w-5 h-5" />
+                                            </div>
+                                            <span className="font-semibold text-lg">Logout</span>
+                                        </button>
                                     </div>
                                 ) : (
-                                    <>
-                                        <Button className="w-full rounded-full" asChild>
-                                            <Link href="/onboarding">Get Started</Link>
-                                        </Button>
-                                        <Button variant="outline" className="w-full rounded-full" asChild>
-                                            <Link href="/login">Login</Link>
-                                        </Button>
-                                    </>
+                                    /* GUEST MENU */
+                                    <div className="flex flex-col gap-6">
+                                        <div className="flex flex-col gap-2">
+                                            <div className="px-2 mb-2 text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                                                Platform
+                                            </div>
+                                            <Link href="/features" className="flex items-center gap-4 p-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors text-zinc-900 dark:text-zinc-100" onClick={() => setMobileMenuOpen(false)}>
+                                                <Rocket className="w-5 h-5 text-primary" />
+                                                <span className="font-semibold text-lg">Features</span>
+                                            </Link>
+                                            <Link href="/about" className="flex items-center gap-4 p-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors text-zinc-900 dark:text-zinc-100" onClick={() => setMobileMenuOpen(false)}>
+                                                <Users className="w-5 h-5 text-primary" />
+                                                <span className="font-semibold text-lg">About Us</span>
+                                            </Link>
+                                        </div>
+
+                                        <div className="flex flex-col gap-3 mt-4">
+                                            <Button size="lg" className="w-full rounded-full h-12 text-lg font-bold" asChild>
+                                                <Link href="/onboarding" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
+                                            </Button>
+                                            <Button variant="outline" size="lg" className="w-full rounded-full h-12 text-lg font-semibold border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100" asChild>
+                                                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+                                            </Button>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
+
+                            {/* Footer */}
+                            <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
+                                <div className="flex items-center justify-center gap-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                                    <span>© 2024 Starto</span>
+                                    <span>•</span>
+                                    <span>Made in India 🇮🇳</span>
+                                </div>
+                            </div>
                         </motion.div>
-                    </>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </motion.header>

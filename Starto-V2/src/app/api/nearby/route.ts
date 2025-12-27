@@ -39,7 +39,7 @@ export async function GET(req: Request) {
     let extraSelect = "";
     if (role === "freelancer") extraSelect = `, p."headline", p."skills", p."hourlyRate"`;
     else if (role === "investor") extraSelect = `, p."firmName", p."investorType", p."sectors"`;
-    else if (role === "startup") extraSelect = `, p."oneLiner", p."stage", p."industry"`;
+    else if (role === "startup") extraSelect = `, p."name" as "companyName", p."oneLiner", p."stage", p."industry"`; // Expose p.name as companyName
     else if (role === "space") extraSelect = `, p."companyName", p."providerType", p."address"`;
 
     // Haversine calculation part
@@ -49,10 +49,10 @@ export async function GET(req: Request) {
         (
           6371 * acos(
             cos(radians(${lat})) *
-            cos(radians(p.latitude::float)) *
-            cos(radians(p.longitude::float) - radians(${lng})) +
+            cos(radians(u.latitude::float)) *
+            cos(radians(u.longitude::float) - radians(${lng})) +
             sin(radians(${lat})) *
-            sin(radians(p.latitude::float))
+            sin(radians(u.latitude::float))
           )
         )
       `
@@ -74,9 +74,10 @@ export async function GET(req: Request) {
           u.id as "userId",
           u.name,
           u.role,
-          p.city,
-          p.latitude,
-          p.longitude${extraSelect},
+          u.city,
+          u.pincode,
+          u.latitude,
+          u.longitude${extraSelect},
           ${haversineSql} as distance_km
         FROM "${tableName}" p
         JOIN "User" u ON u.id = p."${userJoinKey}"
@@ -90,7 +91,7 @@ export async function GET(req: Request) {
       ORDER BY distance_km ASC NULLS LAST
       LIMIT 100;
     `;
-    const result = await prisma.$queryRawUnsafe(query, city, radius);
+    const result = await prisma.$queryRawUnsafe(query, `%${city}%`, radius);
     // const result = await prisma.$queryRawUnsafe(query);
 
     // Parse BigInt if any (Prisma returns BigInt for count/etc sometimes, usually ok here logic-wise)

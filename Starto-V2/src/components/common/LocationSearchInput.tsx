@@ -26,7 +26,7 @@ interface LocationSearchInputProps {
 export default function LocationSearchInput({ defaultValue, onLocationSelect, placeholder }: LocationSearchInputProps) {
     const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
     const { isLoaded } = useJsApiLoader({
-        id: "google-map-script",
+        id: "starto-map-script",
         googleMapsApiKey: key,
         libraries,
     });

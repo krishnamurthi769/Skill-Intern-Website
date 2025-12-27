@@ -1,6 +1,6 @@
 // src/app/api/nearby/freelancers/route.ts
 import { NextResponse } from "next/server";
-import { queryNearbyRaw } from "@/lib/location-utils";
+import { prisma } from "@/lib/prisma";
 import { error as logError } from "@/lib/logger";
 
 export async function GET(req: Request) {
@@ -17,31 +17,50 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "lat & lng are required" }, { status: 400 });
         }
 
-        // Optional filters building (prisma raw WHERE clause)
+        // Optional filters building
         let whereClause = "";
         if (skills) {
-            // assuming skills stored as text[] in DB
             const skillsList = skills.split(",").map((s) => s.trim()).filter(Boolean);
             if (skillsList.length) {
-                // sanitize simple strings for SQL array literal
                 const arr = skillsList.map((s) => `'${s.replace(/'/g, "''")}'`).join(",");
-                whereClause += ` AND skills && ARRAY[${arr}]::text[] `;
+                whereClause += ` AND f.skills && ARRAY[${arr}]::text[] `;
             }
         }
         if (city) {
             const c = city.replace(/'/g, "''");
-            whereClause += ` AND city ILIKE '${c}%' `;
+            whereClause += ` AND u.city ILIKE '${c}%' `;
         }
 
-        const rows: any[] = await queryNearbyRaw({
-            tableName: "FreelancerProfile",
-            lat,
-            lng,
-            radiusKm: radius,
-            columns: "id, userId, skills, hourlyRate, address, city, latitude, longitude, bio, portfolio",
-            whereClause,
-            limit,
-        });
+        // Raw SQL for JOIN
+        const sql = `
+            SELECT 
+                f.id, f."userId", f.skills, f."hourlyRate", f.bio, f.portfolio,
+                u.name, u.image, u.city, u.latitude, u.longitude,
+                (
+                    6371 * acos(
+                        cos(radians($1)) *
+                        cos(radians(u.latitude)) *
+                        cos(radians(u.longitude) - radians($2)) +
+                        sin(radians($1)) * sin(radians(u.latitude))
+                    )
+                ) AS distance_km
+            FROM "FreelancerProfile" f
+            JOIN "User" u ON f."userId" = u.id
+            WHERE u.latitude IS NOT NULL AND u.longitude IS NOT NULL
+            ${whereClause}
+            AND (
+                6371 * acos(
+                    cos(radians($1)) *
+                    cos(radians(u.latitude)) *
+                    cos(radians(u.longitude) - radians($2)) +
+                    sin(radians($1)) * sin(radians(u.latitude))
+                )
+            ) <= $3
+            ORDER BY distance_km ASC
+            LIMIT $4;
+        `;
+
+        const rows = await prisma.$queryRawUnsafe(sql, lat, lng, radius, limit);
 
         return NextResponse.json({ data: rows });
     } catch (err) {

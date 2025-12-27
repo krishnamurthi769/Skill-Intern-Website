@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { loginWithGoogle, loginWithEmail, registerWithEmail } from "@/lib/auth-actions"; // Helper functions
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
-export default function LoginPage() {
+import { Suspense } from "react";
+
+function LoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl");
@@ -26,14 +29,14 @@ export default function LoginPage() {
         const res = await signIn("firebase-auth", {
             idToken,
             redirect: false,
-            callbackUrl: callbackUrl || "/",
+            callbackUrl: callbackUrl || "/dashboard",
         });
 
         if (res?.error) {
             setError("Session creation failed. Please try again.");
             setLoading(false);
         } else {
-            router.push(callbackUrl || "/"); // Redirect to callback or home
+            router.push(callbackUrl || "/dashboard"); // Redirect to callback or dashboard
         }
     };
 
@@ -77,10 +80,14 @@ export default function LoginPage() {
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
 
                 <div className="relative z-10 flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-                        <span className="text-black font-bold text-xl">S</span>
-                    </div>
-                    <span className="text-2xl font-bold tracking-tight">Starto</span>
+                    <Image
+                        src="/logo-v2.png"
+                        alt="Starto"
+                        width={200}
+                        height={80}
+                        className="h-16 w-auto object-contain invert"
+                        priority
+                    />
                 </div>
 
                 <div className="relative z-10 max-w-lg">
@@ -151,6 +158,7 @@ export default function LoginPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                     disabled={loading}
+                                    className="h-12"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -162,6 +170,7 @@ export default function LoginPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                     disabled={loading}
+                                    className="h-12"
                                 />
                             </div>
 
@@ -191,5 +200,13 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginContent />
+        </Suspense>
     );
 }

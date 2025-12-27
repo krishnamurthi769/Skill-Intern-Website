@@ -69,105 +69,130 @@ export function RequestsClient({ initialPending, initialAccepted, userId }: Requ
     }
 
     return (
-        <Tabs defaultValue="inbox" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 max-w-[400px] mb-8">
-                <TabsTrigger value="inbox" className="relative">
-                    Inbox
-                    {pending.length > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] text-destructive-foreground">
-                            {pending.length}
-                        </span>
-                    )}
-                </TabsTrigger>
-                <TabsTrigger value="connections">Connections</TabsTrigger>
-            </TabsList>
+        <div className="w-full max-w-5xl mx-auto space-y-8">
+            <Tabs defaultValue="inbox" className="w-full flex flex-col items-center">
+                <div className="w-full flex justify-center mb-8">
+                    <TabsList className="grid w-full max-w-[400px] grid-cols-2 bg-muted/30 p-1 h-11 items-center rounded-full">
+                        <TabsTrigger value="inbox" className="relative rounded-full data-[state=active]:bg-white data-[state=active]:shadow-md transition-all duration-300 h-9">
+                            Inbox
+                            {pending.length > 0 && (
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-background animate-in zoom-in spin-in-180 duration-500">
+                                    {pending.length}
+                                </span>
+                            )}
+                        </TabsTrigger>
+                        <TabsTrigger value="connections" className="rounded-full data-[state=active]:bg-white data-[state=active]:shadow-md transition-all duration-300 h-9">
+                            My Network
+                        </TabsTrigger>
+                    </TabsList>
+                </div>
 
-            <TabsContent value="inbox" className="space-y-6">
-                {pending.length === 0 ? (
-                    <div className="text-center p-16 border rounded-lg bg-muted/40 flex flex-col items-center gap-4">
-                        <Users className="h-12 w-12 text-muted-foreground opacity-20" />
-                        <h3 className="font-semibold text-lg">No pending requests</h3>
-                        <p className="text-muted-foreground">Your inbox is clear.</p>
-                    </div>
-                ) : (
-                    <div className="grid gap-4 md:grid-cols-2">
-                        {pending.map((req) => (
-                            <Card key={req.id}>
-                                <CardHeader className="pb-3 flex flex-row gap-4 items-start space-y-0">
-                                    <Avatar className="h-10 w-10">
-                                        <AvatarImage src={req.fromUser?.image} />
-                                        <AvatarFallback>{(req.senderName || "?")[0]}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex-1 space-y-1">
-                                        <CardTitle className="text-base flex items-center justify-between">
-                                            {req.senderName}
-                                            <Badge variant="secondary" className="text-xs font-normal">
-                                                {req.senderRole}
-                                            </Badge>
-                                        </CardTitle>
-                                        <CardDescription className="text-xs">
-                                            {req.purpose} &bull; {new Date(req.createdAt).toLocaleDateString()}
-                                        </CardDescription>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="pb-3 text-sm italic text-muted-foreground">
-                                    "{req.message}"
-                                </CardContent>
-                                <CardFooter className="flex justify-end gap-2 pt-0 pb-4">
-                                    <Button variant="ghost" size="sm" onClick={() => handleRespond(req.id, "REJECT")} disabled={!!processing}>
-                                        Ignore
-                                    </Button>
-                                    <Button size="sm" onClick={() => handleRespond(req.id, "ACCEPT")} disabled={!!processing}>
-                                        {processing === req.id && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
-                                        Accept
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                )}
-            </TabsContent>
-
-            <TabsContent value="connections" className="space-y-6">
-                {accepted.length === 0 ? (
-                    <div className="text-center p-16 border rounded-lg bg-muted/40 flex flex-col items-center gap-4">
-                        <Users className="h-12 w-12 text-muted-foreground opacity-20" />
-                        <h3 className="font-semibold text-lg">No connections yet</h3>
-                    </div>
-                ) : (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {accepted.map((conn) => {
-                            // Determine 'other' user to display
-                            const isMeSender = conn.fromUserId === userId;
-                            const otherUser = isMeSender ? conn.toUser : conn.fromUser;
-                            const otherName = isMeSender ? conn.toUser?.name : conn.senderName; // senderName might be snapshot
-                            // Better to use User relation if available
-                            const displayName = otherUser?.name || "User";
-
-                            return (
-                                <Card key={conn.id}>
-                                    <CardHeader className="pb-3 flex flex-row gap-4 items-center space-y-0">
-                                        <Avatar>
-                                            <AvatarImage src={otherUser?.image} />
-                                            <AvatarFallback>{displayName[0]}</AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <CardTitle className="text-base">{displayName}</CardTitle>
-                                            <div className="text-xs text-muted-foreground font-mono">{conn.connectionId || "Active"}</div>
+                <TabsContent value="inbox" className="w-full space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in">
+                    {pending.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-24 border border-dashed rounded-3xl bg-muted/5">
+                            <div className="h-16 w-16 bg-muted/50 rounded-full flex items-center justify-center mb-4">
+                                <Users className="h-8 w-8 text-muted-foreground/50" />
+                            </div>
+                            <h3 className="font-bold text-xl text-foreground">Inbox is empty</h3>
+                            <p className="text-muted-foreground mt-1 max-w-sm text-center">
+                                No pending connection requests. Explore the map to find new peers!
+                            </p>
+                            <Button variant="link" className="mt-4 text-primary" onClick={() => router.push('/explore')}>
+                                Go to Explore
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="grid gap-6 md:grid-cols-2">
+                            {pending.map((req) => (
+                                <Card key={req.id} className="overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:border-primary/20 group rounded-2xl">
+                                    <div className="p-6">
+                                        <div className="flex items-start gap-4">
+                                            <Avatar className="h-14 w-14 border-2 border-background shadow-sm group-hover:scale-105 transition-transform">
+                                                <AvatarImage src={req.fromUser?.image} />
+                                                <AvatarFallback className="bg-primary/10 text-primary text-lg font-bold">{(req.senderName || "?")[0]}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <h4 className="font-bold text-lg text-foreground truncate">{req.senderName}</h4>
+                                                    <Badge variant="secondary" className="text-[10px] font-medium opacity-80 backdrop-blur">
+                                                        {req.senderRole}
+                                                    </Badge>
+                                                </div>
+                                                <p className="text-xs text-muted-foreground flex items-center gap-1.5 mb-3">
+                                                    <Clock className="w-3.5 h-3.5" />
+                                                    <span>{new Date(req.createdAt).toLocaleDateString()}</span>
+                                                    <span className="opacity-50">•</span>
+                                                    <span className="font-medium text-foreground/80">{req.purpose}</span>
+                                                </p>
+                                                <div className="relative bg-muted/30 p-3 rounded-xl text-sm italic text-muted-foreground border border-border/50">
+                                                    "{req.message}"
+                                                </div>
+                                            </div>
                                         </div>
-                                    </CardHeader>
-                                    <CardFooter className="pt-0 pb-4">
-                                        <Button className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white" onClick={() => openWhatsApp(conn.connectionId || conn.id)}>
-                                            <MessageCircle className="h-4 w-4" />
-                                            Chat on WhatsApp
-                                        </Button>
-                                    </CardFooter>
+                                        <div className="mt-6 flex gap-3">
+                                            <Button variant="outline" className="flex-1 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20 border-dashed transition-colors" onClick={() => handleRespond(req.id, "REJECT")} disabled={!!processing}>
+                                                <X className="w-4 h-4 mr-2" /> Ignore
+                                            </Button>
+                                            <Button className="flex-1 bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90 transition-all" onClick={() => handleRespond(req.id, "ACCEPT")} disabled={!!processing}>
+                                                {processing === req.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+                                                Accept Request
+                                            </Button>
+                                        </div>
+                                    </div>
                                 </Card>
-                            )
-                        })}
-                    </div>
-                )}
-            </TabsContent>
-        </Tabs>
+                            ))}
+                        </div>
+                    )}
+                </TabsContent>
+
+                <TabsContent value="connections" className="w-full space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in delay-75">
+                    {accepted.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-24 border border-dashed rounded-3xl bg-muted/5">
+                            <div className="h-16 w-16 bg-muted/50 rounded-full flex items-center justify-center mb-4">
+                                <Users className="h-8 w-8 text-muted-foreground/50" />
+                            </div>
+                            <h3 className="font-bold text-xl">No connections yet</h3>
+                            <p className="text-muted-foreground mt-1 text-center">Your network is just getting started.</p>
+                        </div>
+                    ) : (
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {accepted.map((conn) => {
+                                const isMeSender = conn.fromUserId === userId;
+                                const otherUser = isMeSender ? conn.toUser : conn.fromUser;
+                                const displayName = otherUser?.name || conn.senderName || "User";
+
+                                return (
+                                    <Card key={conn.id} className="group hover:border-green-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/5 rounded-2xl overflow-hidden">
+                                        <div className="p-4 flex items-center gap-4">
+                                            <div className="relative">
+                                                <Avatar className="h-14 w-14 border-2 border-background shadow-sm group-hover:ring-2 ring-green-500/20 transition-all">
+                                                    <AvatarImage src={otherUser?.image} />
+                                                    <AvatarFallback className="bg-primary/5 text-primary text-lg font-bold">{displayName[0]}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-background shadow-sm" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-base truncate">{displayName}</h4>
+                                                <p className="text-xs text-muted-foreground font-mono mt-0.5 truncate opacity-70">
+                                                    Active Connection
+                                                </p>
+                                            </div>
+                                            <Button
+                                                size="sm"
+                                                className="rounded-full h-10 w-10 p-0 shrink-0 bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-600/20"
+                                                onClick={() => openWhatsApp(conn.connectionId || conn.id)}
+                                                title="Chat on WhatsApp"
+                                            >
+                                                <MessageCircle className="h-5 w-5" />
+                                            </Button>
+                                        </div>
+                                    </Card>
+                                )
+                            })}
+                        </div>
+                    )}
+                </TabsContent>
+            </Tabs>
+        </div>
     )
 }

@@ -1,215 +1,95 @@
 "use client"
-
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Warehouse, Key, Users, DollarSign, Calendar, Settings, MapPin } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-
-import { ProviderPropertiesSection } from "@/components/provider/sections/ProviderPropertiesSection"
-import { ProviderSettingsSection } from "@/components/provider/sections/ProviderSettingsSection"
-import { MapSection } from "@/components/dashboard/sections/MapSection"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { MapPin, Search, Warehouse, Users } from "lucide-react"
+import { useUser } from "@/hooks/useUser"
+import { ProviderSettingsSection } from "@/components/provider/sections/ProviderSettingsSection"
+
+import { InviteCard } from "@/components/invite/InviteCard"
 
 interface ProviderDashboardProps {
     section?: string;
 }
 
 export default function ProviderDashboard({ section }: ProviderDashboardProps) {
-    if (section === "properties") {
-        return <ProviderPropertiesSection />
-    }
-    if (section === "settings") {
-        return <ProviderSettingsSection />
-    }
-    if (section === "map") {
-        return <MapSection userRole="provider" />
+    if (section === "settings" || section === "profile") {
+        return <ProviderSettingsSection />;
     }
 
-    const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    const { dbUser } = useUser();
+    const router = useRouter();
+
+    const name = dbUser?.name || "Space Provider";
+    const company = dbUser?.providerProfile?.companyName || "Co-working Space";
+    const type = dbUser?.providerProfile?.providerType || "Space Partner";
+    const city = dbUser?.city || "Location Not Set";
 
     return (
-        <div className="space-y-8">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-6">
-                <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Provider Dashboard</h2>
-                    <div className="flex items-center text-muted-foreground mt-1 gap-2 text-sm">
-                        <Calendar className="h-4 w-4" />
-                        <span>{currentDate}</span>
-                    </div>
-                </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" asChild>
-                        <Link href="/dashboard?section=settings">
-                            <Settings className="mr-2 h-4 w-4" /> Settings
-                        </Link>
-                    </Button>
-                    <Button asChild>
-                        <Link href="/dashboard?section=properties">
-                            <Warehouse className="mr-2 h-4 w-4" /> My Spaces
-                        </Link>
-                    </Button>
-                </div>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                <ProStatsCard
-                    title="Revenue (MTD)"
-                    value="₹ 8,50,000"
-                    icon={DollarSign}
-                    trend="+12%"
-                    description="vs last month"
-                    variant="success"
-                />
-                <ProStatsCard
-                    title="Occupancy"
-                    value="85%"
-                    icon={Users}
-                    description="4 spaces total"
-                />
-                <ProStatsCard
-                    title="Active Bookings"
-                    value="12"
-                    icon={Key}
-                    description="Current"
-                />
-                <ProStatsCard
-                    title="Pending Visits"
-                    value="5"
-                    icon={Calendar}
-                    description="For this week"
-                    variant="warning"
-                />
-            </div>
-
-            {/* Main Content */}
-            <div className="grid gap-8 grid-cols-1 lg:grid-cols-12">
-                {/* Bookings Table (8 Cols) */}
-                <div className="lg:col-span-8 flex flex-col gap-6">
-                    <Card className="h-full border-muted/60 shadow-sm">
-                        <CardHeader>
-                            <CardTitle>Upcoming Bookings</CardTitle>
-                            <CardDescription>Schedule for next 7 days.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left">
-                                    <thead className="bg-muted/50 text-muted-foreground border-b uppercase text-xs font-medium">
-                                        <tr>
-                                            <th className="px-6 py-3">Tenant</th>
-                                            <th className="px-6 py-3">Space</th>
-                                            <th className="px-6 py-3">Date</th>
-                                            <th className="px-6 py-3 text-right">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y">
-                                        <BookingRow
-                                            tenant="Neon Startups"
-                                            space="Hub #1 (Private Office)"
-                                            date="Tomorrow, 9:00 AM"
-                                            status="Confirmed"
-                                        />
-                                        <BookingRow
-                                            tenant="Sarah J. (Freelancer)"
-                                            space="Desk A4"
-                                            date="Dec 22, 10:00 AM"
-                                            status="Confirmed"
-                                        />
-                                        <BookingRow
-                                            tenant="CyberSec Team"
-                                            space="Conference Room B"
-                                            date="Dec 23, 2:00 PM"
-                                            status="Pending"
-                                        />
-                                    </tbody>
-                                </table>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Sidebar (4 Cols) */}
-                <div className="lg:col-span-4 flex flex-col gap-6">
-                    <Card className="border-muted/60 shadow-sm bg-muted/20">
-                        <CardHeader>
-                            <CardTitle className="text-base">Operational Alerts</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <AlertItem
-                                title="Cleaning Required"
-                                desc="Hub #1 after checkout"
-                                time="Tomorrow"
-                                priority="High"
-                            />
-                            <AlertItem
-                                title="WiFi Maintenance"
-                                desc="Scheduled downtime"
-                                time="Sunday, 2am"
-                                priority="Low"
-                            />
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-function ProStatsCard({ title, value, icon: Icon, trend, variant, description }: any) {
-    let bgClass = 'bg-primary/5';
-    let iconClass = 'text-primary';
-    if (variant === 'success') { bgClass = 'bg-green-50 dark:bg-green-900/20'; iconClass = 'text-green-600'; }
-    if (variant === 'warning') { bgClass = 'bg-orange-50 dark:bg-orange-900/20'; iconClass = 'text-orange-600'; }
-
-    return (
-        <Card className="border-muted/60 shadow-sm hover:shadow-md transition-all">
-            <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <div className={`p-2.5 rounded-lg ${bgClass}`}>
-                        <Icon className={`h-5 w-5 ${iconClass}`} />
-                    </div>
-                </div>
-                <div>
-                    <div className="text-2xl font-bold tracking-tight">{value}</div>
-                    <div className="text-sm font-medium text-muted-foreground mt-1">{title}</div>
-                    <div className="flex items-center gap-2 mt-2">
-                        {trend && <span className="text-xs font-semibold text-green-600">{trend}</span>}
-                        {description && <p className="text-xs text-muted-foreground">{description}</p>}
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    )
-}
-
-function BookingRow({ tenant, space, date, status }: any) {
-    return (
-        <tr className="hover:bg-muted/30 transition-colors">
-            <td className="px-6 py-4 font-medium">{tenant}</td>
-            <td className="px-6 py-4 text-muted-foreground flex items-center gap-2">
-                <MapPin className="h-3 w-3" /> {space}
-            </td>
-            <td className="px-6 py-4">{date}</td>
-            <td className="px-6 py-4 text-right">
-                <Badge variant={status === 'Pending' ? 'outline' : 'secondary'}>{status}</Badge>
-            </td>
-        </tr>
-    )
-}
-
-function AlertItem({ title, desc, time, priority }: any) {
-    return (
-        <div className="flex justify-between items-start border-b border-border/50 pb-3 last:border-0 last:pb-0">
-            <div>
-                <div className="text-sm font-medium">{title}</div>
-                <div className="text-xs text-muted-foreground">{desc}</div>
-            </div>
-            <div className="text-right">
-                <Badge variant={priority === 'High' ? 'destructive' : 'outline'} className="text-[10px] h-5 px-1.5 mb-1 block">
-                    {priority}
+        <div className="space-y-8 max-w-5xl mx-auto pt-10">
+            {/* 1. Header & Location Badge */}
+            <div className="flex flex-col items-center text-center space-y-4">
+                <Badge variant="outline" className="px-4 py-1.5 text-sm bg-background border-primary/20 text-primary">
+                    <MapPin className="w-3 h-3 mr-2" />
+                    {city}
                 </Badge>
-                <span className="text-[10px] text-muted-foreground">{time}</span>
+                <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
+                    {company}
+                </h1>
+                <p className="text-xl text-muted-foreground max-w-2xl">
+                    Managed by {name} • {type}
+                </p>
+            </div>
+
+            {/* 2. Primary Actions (Launchpad) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8">
+                {/* Action A: Find Founders */}
+                <Card className="group relative overflow-hidden border-primary/20 hover:border-primary/50 transition-all duration-300">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <CardContent className="p-8 flex flex-col items-center text-center relative z-10">
+                        <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
+                            <Users className="w-8 h-8" />
+                        </div>
+                        <h3 className="text-2xl font-bold mb-2">Find Founders</h3>
+                        <p className="text-muted-foreground mb-8">
+                            Connect with startups looking for space.
+                        </p>
+                        <Button size="lg" className="w-full text-lg h-12" onClick={() => router.push("/nearby?tab=founder")}>
+                            Find Tenants
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {/* Action B: Market Info */}
+                <Card className="group relative overflow-hidden border-white/10 hover:border-white/20 transition-all duration-300">
+                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <CardContent className="p-8 flex flex-col items-center text-center relative z-10">
+                        <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
+                            <Warehouse className="w-8 h-8" />
+                        </div>
+                        <h3 className="text-2xl font-bold mb-2">Listing Insights</h3>
+                        <p className="text-muted-foreground mb-8">
+                            Check demand in your area.
+                        </p>
+                        <Button size="lg" variant="secondary" className="w-full text-lg h-12" onClick={() => router.push("/explore")}>
+                            Analyze Demand
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* 3. Community Growth */}
+            <div className="w-full pt-4">
+                <InviteCard />
+            </div>
+
+            {/* 3. Quick Links / Status */}
+            <div className="flex justify-center gap-4 text-sm text-muted-foreground pt-12">
+                <Link href="/dashboard?section=settings" className="hover:text-primary transition-colors flex items-center gap-2">
+                    Update Space Details
+                </Link>
             </div>
         </div>
     )

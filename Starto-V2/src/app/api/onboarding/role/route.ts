@@ -34,6 +34,7 @@ export async function POST(req: Request) {
             where: { email: session.user.email },
             data: {
                 activeRole: prismaRole as any,
+                role: prismaRole as any, // Fix: Ensure primary role is also set!
                 // Initialize profile if it doesn't exist
                 startupProfile: role === "startup" ? {
                     upsert: {

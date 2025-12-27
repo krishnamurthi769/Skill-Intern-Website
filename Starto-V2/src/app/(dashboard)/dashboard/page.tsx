@@ -3,12 +3,12 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 import FounderDashboard from "./FounderDashboard";
 import FreelancerDashboard from "./FreelancerDashboard";
 import InvestorDashboard from "./InvestorDashboard";
 import ProviderDashboard from "./ProviderDashboard";
-
-export const dynamic = "force-dynamic";
 
 interface PageProps {
     searchParams: Promise<{ section?: string }>;
@@ -20,7 +20,9 @@ export default async function DashboardPage({ searchParams }: PageProps) {
         redirect("/api/auth/signin");
     }
 
+    // Await params and ensure section is valid string or undefined (safely)
     const { section } = await searchParams;
+    const safeSection = section || "";
 
     // Hard Role Sync (Single Source of Truth)
     const dbUser = await prisma.user.findUnique({
@@ -33,13 +35,13 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     switch (activeRole) {
         case "STARTUP":
         case "ADMIN":
-            return <FounderDashboard section={section} />;
+            return <FounderDashboard section={safeSection} />;
         case "FREELANCER":
-            return <FreelancerDashboard section={section} />;
+            return <FreelancerDashboard section={safeSection} />;
         case "INVESTOR":
-            return <InvestorDashboard section={section} />;
+            return <InvestorDashboard section={safeSection} />;
         case "PROVIDER":
-            return <ProviderDashboard section={section} />;
+            return <ProviderDashboard section={safeSection} />;
         default:
             redirect("/onboarding");
     }

@@ -1,4 +1,5 @@
 
+import OpenAI from "openai";
 import { log, error as logError } from "@/lib/logger";
 
 // ... existing imports ...

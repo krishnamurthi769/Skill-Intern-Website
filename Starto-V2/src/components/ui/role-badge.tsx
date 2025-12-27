@@ -6,7 +6,8 @@ const roleColors: Record<UserRole, "default" | "secondary" | "destructive" | "ou
     admin: "destructive",
     freelancer: "secondary",
     investor: "default",
-    provider: "outline"
+    startup: "outline",
+    provider: "secondary"
 }
 
 interface RoleBadgeProps {
