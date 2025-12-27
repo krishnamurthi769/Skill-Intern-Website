@@ -71,7 +71,7 @@ export const config = {
         "/dashboard/:path*",
         "/connections/:path*",
         "/nearby/:path*",
-        "/explore/:path*",
+
         "/settings/:path*",
         "/admin/:path*",
         "/api/admin/:path*",
