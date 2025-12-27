@@ -1,0 +1,14 @@
+# PLACE THIS FILE AT THE REPOSITORY ROOT (github.com/StartoIndia/...)
+# RENAME IT TO: nixpacks.toml
+
+[phases.setup]
+nixPkgs = ["nodejs_18"]
+
+[phases.install]
+cmds = ["cd Starto-V2 && npm install"]
+
+[phases.build]
+cmds = ["cd Starto-V2 && npm run build"]
+
+[start]
+cmd = "cd Starto-V2 && npm run start"
