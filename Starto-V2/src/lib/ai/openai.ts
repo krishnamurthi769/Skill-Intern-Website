@@ -8,7 +8,7 @@ import { log, error as logError } from "@/lib/logger";
 
 // Initialize OpenAI Client
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY || "dummy-key-for-build", // Fallback to prevent build crash if env var is missing
 });
 
 export interface StartupProfileData {

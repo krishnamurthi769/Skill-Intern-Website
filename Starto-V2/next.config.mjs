@@ -12,7 +12,7 @@ const nextConfig = {
 // If reactCompiler is not standard top-level, it might be ignored or cause warning, but better than crashing on file type.
 
 const config = {
-    reactCompiler: false
+    // reactCompiler: false // Removed invalid option
 };
 
 export default config;
