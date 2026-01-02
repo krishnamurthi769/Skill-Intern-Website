@@ -85,13 +85,19 @@ function HeroButtons() {
     }
 
     return (
-        <>
-            <Button size="lg" className="rounded-full h-12 md:h-14 px-8 text-lg md:text-xl shadow-lg shadow-primary/25 font-bold" asChild>
-                <Link href="/onboarding">Get Started</Link>
+        <div className="flex flex-col gap-4 w-full items-center">
+            <Button size="lg" className="rounded-full h-12 md:h-14 px-8 text-lg md:text-xl shadow-lg shadow-primary/25 font-bold w-full sm:w-auto animate-pulse hover:animate-none" asChild>
+                <Link href="/explore">👉 Explore Your Market</Link>
             </Button>
-            <Button variant="outline" size="lg" className="rounded-full h-12 md:h-14 px-8 text-lg md:text-xl font-bold border-2" asChild>
-                <Link href="/login">Login</Link>
-            </Button>
-        </>
+
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <Button variant="outline" size="lg" className="rounded-full h-12 md:h-14 px-8 text-lg md:text-xl font-bold border-2 w-full sm:w-auto" asChild>
+                    <Link href="/onboarding">Get Started</Link>
+                </Button>
+                <Button variant="ghost" size="lg" className="rounded-full h-12 md:h-14 px-8 text-lg md:text-xl font-medium w-full sm:w-auto" asChild>
+                    <Link href="/login">Login</Link>
+                </Button>
+            </div>
+        </div>
     );
 }
