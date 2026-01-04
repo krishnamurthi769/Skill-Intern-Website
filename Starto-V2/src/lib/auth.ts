@@ -104,7 +104,14 @@ export const authOptions: NextAuthOptions = {
             }
 
             if (trigger === "update") {
-                if (session?.activeRole) token.activeRole = session.activeRole;
+                if (session?.activeRole) {
+                    token.activeRole = session.activeRole;
+                    // Also update primary role if it's currently missing but we have an active role
+                    // This helps middleware pass immediately without DB refetch
+                    if (!token.role) {
+                        token.role = session.activeRole;
+                    }
+                }
                 if (session?.latitude) token.latitude = session.latitude;
                 if (session?.longitude) token.longitude = session.longitude;
                 if (session?.city) token.city = session.city;

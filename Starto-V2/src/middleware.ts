@@ -10,7 +10,9 @@ export default withAuth(
         // 🧠 THE GOLDEN RULE: A user without a role must NEVER see any dashboard.
 
         // 1. Check Role
-        const hasRole = !!token?.role
+        // Relaxed Check: If they have EITHER a primary role OR an activeRole, they are "roled".
+        // This fixes the issue where primary 'role' might be delayed but 'activeRole' is present.
+        const hasRole = !!token?.role || !!(token as any)?.activeRole
 
         if (!hasRole) {
             // Redirect to Role Selection
