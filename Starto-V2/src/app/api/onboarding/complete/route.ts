@@ -2,13 +2,22 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { log, error as logError } from "@/lib/logger";
 
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
 export async function POST(req: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const body = await req.json();
         log("ONBOARDING_PAYLOAD", body); // verify payload
-        const { email, role, data } = body;
+        const { role, data } = body;
+        const email = session.user.email; // Source of truth from session
 
-        if (!email || !role || !data) {
+        if (!role || !data) {
             return NextResponse.json({ error: "Missing fields" }, { status: 400 });
         }
 

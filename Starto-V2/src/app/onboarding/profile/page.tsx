@@ -109,7 +109,11 @@ export default function OnboardingProfilePage() {
             // Sync Session (Important to pass Middleware Guard)
             await update({
                 onboarded: true,
-                activeRole: activeRole // Ensure role is sticky
+                activeRole: activeRole, // Ensure role is sticky
+                // Persist Location in Session (Prevent Loop)
+                latitude: (session?.user as any)?.latitude,
+                longitude: (session?.user as any)?.longitude,
+                city: (session?.user as any)?.city
             });
 
             // Redirect to Dashboard (Flow Complete)
