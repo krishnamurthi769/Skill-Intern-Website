@@ -44,9 +44,8 @@ export function Footer() {
                 <div className="pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
                     <p>© 2024 Starto Inc. All rights reserved.</p>
                     <div className="flex gap-4">
-                        <Link href="#">Twitter</Link>
-                        <Link href="#">LinkedIn</Link>
-                        <Link href="#">Instagram</Link>
+                        <Link href="https://www.linkedin.com/company/startoindia/" target="_blank" rel="noopener noreferrer">LinkedIn</Link>
+                        <Link href="https://www.instagram.com/startoindia?igsh=aDJqcG51MTJ6ZDNt" target="_blank" rel="noopener noreferrer">Instagram</Link>
                     </div>
                 </div>
             </div>

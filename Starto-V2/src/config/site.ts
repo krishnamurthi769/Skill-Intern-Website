@@ -4,7 +4,8 @@ export const siteConfig = {
     url: "https://starto.com",
     ogImage: "https://starto.com/og.jpg",
     links: {
-        twitter: "https://twitter.com/starto",
         github: "https://github.com/starto",
+        linkedin: "https://www.linkedin.com/company/startoindia/",
+        instagram: "https://www.instagram.com/startoindia?igsh=aDJqcG51MTJ6ZDNt",
     },
 }

@@ -51,7 +51,7 @@ export function AboutSection() {
                                 <Link href="/onboarding">Join the Revolution</Link>
                             </Button>
                             <Button size="lg" variant="outline" className="rounded-full px-8" asChild>
-                                <Link href="https://linkedin.com" target="_blank">Connect on LinkedIn <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                                <Link href="https://www.linkedin.com/company/startoindia/" target="_blank">Connect on LinkedIn <ArrowRight className="ml-2 h-4 w-4" /></Link>
                             </Button>
                         </div>
                     </div>
