@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://www.startoindia.com/api/conversations</loc><lastmod>2026-01-06T10:48:55.274Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/api/messages/conversations</loc><lastmod>2026-01-06T10:48:55.275Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/api/seed/founder</loc><lastmod>2026-01-06T10:48:55.275Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/api/user/startup</loc><lastmod>2026-01-06T10:48:55.275Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/icon.png</loc><lastmod>2026-01-06T10:48:55.275Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/about</loc><lastmod>2026-01-06T10:48:55.275Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/contact</loc><lastmod>2026-01-06T10:48:55.275Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/features</loc><lastmod>2026-01-06T10:48:55.275Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/login</loc><lastmod>2026-01-06T10:48:55.276Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/onboarding</loc><lastmod>2026-01-06T10:48:55.276Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/onboarding/profile</loc><lastmod>2026-01-06T10:48:55.276Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/onboarding/location</loc><lastmod>2026-01-06T10:48:55.276Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/privacy</loc><lastmod>2026-01-06T10:48:55.276Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/unauthorized</loc><lastmod>2026-01-06T10:48:55.276Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/onboarding/role</loc><lastmod>2026-01-06T10:48:55.276Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/terms</loc><lastmod>2026-01-06T10:48:55.276Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.startoindia.com/explore</loc><lastmod>2026-01-06T10:48:55.276Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/api/conversations</loc><lastmod>2026-01-06T12:46:48.631Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/api/messages/conversations</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/api/seed/founder</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/api/user/startup</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/icon.png</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/contact</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/explore</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/login</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/onboarding</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/onboarding/location</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/unauthorized</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/onboarding/role</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/terms</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/privacy</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/features</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/onboarding/profile</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.startoindia.com/about</loc><lastmod>2026-01-06T12:46:48.632Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>

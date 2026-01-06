@@ -201,6 +201,30 @@ export async function POST(req: Request) {
             console.error("Referral Attribution Failed", refError);
         }
 
+
+        // 3. Sync to Google Sheets (Async / Fire-and-Forget)
+        // We do this inside a try-catch but don't await likely or don't block.
+        // For Vercel/Serverless, we MUST await, otherwise the lambda freezes.
+        // Since user wants it "after signup", this is the best place (Onboarding Complete).
+        if (process.env.SHEET_ID && process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+            try {
+                const { addUserToSheet } = await import("@/lib/googleSheet");
+                await addUserToSheet({
+                    user_id: user.id,
+                    name: user.name || data.name || "Unknown", // data.name used for Startup, else user.name
+                    email: user.email,
+                    role: user.activeRole || role,
+                    signup_date: new Date().toISOString().split('T')[0],
+                    city: data.city,
+                    state: data.state
+                });
+                log("SHEETS_SYNC_SUCCESS", { userId: user.id });
+            } catch (sheetErr) {
+                console.error("SHEETS_SYNC_ERROR", sheetErr);
+                // Swallow error so we don't fail the onboarding response
+            }
+        }
+
         return NextResponse.json({ success: true });
     } catch (error: any) {
         logError("ONBOARDING_ERROR", error);
