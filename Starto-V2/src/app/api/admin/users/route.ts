@@ -6,10 +6,54 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url)
         const page = parseInt(searchParams.get("page") || "1")
         const limit = parseInt(searchParams.get("limit") || "20")
+        const role = searchParams.get("role")
+        const search = searchParams.get("search")
+        const location = searchParams.get("location")
+
         const skip = (page - 1) * limit
+
+        // Build Where Clause
+        const where: any = {}
+
+        if (role && role !== "ALL") {
+            where.OR = [
+                { role: role as any },
+                { activeRole: role as any }
+            ]
+        }
+
+        if (search) {
+            where.AND = [
+                {
+                    OR: [
+                        { name: { contains: search, mode: "insensitive" } },
+                        { email: { contains: search, mode: "insensitive" } },
+                        { phoneNumber: { contains: search, mode: "insensitive" } }
+                    ]
+                }
+            ]
+        }
+
+        if (location) {
+            const locFilter = { contains: location, mode: "insensitive" as const }
+            // Merge into existing AND or create new
+            const locCondition = {
+                OR: [
+                    { city: locFilter },
+                    { country: locFilter },
+                    { state: locFilter }
+                ]
+            }
+            if (where.AND) {
+                where.AND.push(locCondition)
+            } else {
+                where.AND = [locCondition]
+            }
+        }
 
         const [users, total] = await Promise.all([
             prisma.user.findMany({
+                where,
                 take: limit,
                 skip: skip,
                 orderBy: {
@@ -19,15 +63,17 @@ export async function GET(request: Request) {
                     id: true,
                     name: true,
                     email: true,
+                    phoneNumber: true, // ADDED
+                    image: true,       // ADDED
                     role: true,
                     activeRole: true,
                     city: true,
                     country: true,
-                    // status: true, // Removed as it doesn't exist on User model
+                    state: true,
                     createdAt: true,
                 }
             }),
-            prisma.user.count()
+            prisma.user.count({ where })
         ])
 
         return NextResponse.json({
