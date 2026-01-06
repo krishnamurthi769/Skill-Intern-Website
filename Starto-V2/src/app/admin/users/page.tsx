@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import AdminMobileNav from "@/components/admin/AdminMobileNav"
+import { AdminMobileNav } from "@/components/admin/AdminMobileNav"
 
 // --- Types ---
 interface User {
