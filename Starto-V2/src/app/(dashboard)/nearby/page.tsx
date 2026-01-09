@@ -36,6 +36,11 @@ interface NearbyProfile {
     companyName?: string;
     providerType?: string;
     sectors?: string[];
+    // Description fields
+    bio?: string;
+    oneLiner?: string;
+    description?: string;
+    website?: string;
 }
 
 export default function NearbyPage() {
@@ -316,6 +321,36 @@ export default function NearbyPage() {
                                     {selectedMarker.city || "Unknown City"}
                                     {selectedMarker.distance_km && <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded ml-auto">{selectedMarker.distance_km.toFixed(1)} km away</span>}
                                 </div>
+
+                                {/* Description */}
+                                {(selectedMarker.bio || selectedMarker.oneLiner || selectedMarker.description) && (
+                                    <div className="mb-3 text-xs text-muted-foreground italic line-clamp-3">
+                                        "{selectedMarker.bio || selectedMarker.oneLiner || selectedMarker.description}"
+                                    </div>
+                                )}
+
+                                {/* Links */}
+                                <div className="flex flex-col gap-1 mb-3">
+                                    <a
+                                        href={`/${role === 'space' ? 'providers' : role + 's'}/${selectedMarker.profileId}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+                                    >
+                                        View Idea & Profile <span aria-hidden="true">&rarr;</span>
+                                    </a>
+                                    {selectedMarker.website && (
+                                        <a
+                                            href={selectedMarker.website.startsWith('http') ? selectedMarker.website : `https://${selectedMarker.website}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-xs text-muted-foreground hover:text-primary hover:underline flex items-center gap-1"
+                                        >
+                                            Visit Website <span aria-hidden="true">&rarr;</span>
+                                        </a>
+                                    )}
+                                </div>
+
                                 <div className="flex flex-wrap gap-1">
                                     {(selectedMarker.skills || selectedMarker.sectors || []).slice(0, 3).map((tag: string, i: number) => (
                                         <Badge key={i} variant="secondary" className="text-[10px] px-1.5 h-5 font-normal bg-secondary/50">{tag}</Badge>

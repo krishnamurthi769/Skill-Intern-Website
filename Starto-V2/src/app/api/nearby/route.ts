@@ -37,10 +37,10 @@ export async function GET(req: Request) {
 
     // Determine extra fields based on role for "subtitle" or similar context
     let extraSelect = "";
-    if (role === "freelancer") extraSelect = `, p."headline", p."skills", p."hourlyRate"`;
-    else if (role === "investor") extraSelect = `, p."firmName", p."investorType", p."sectors"`;
-    else if (role === "startup") extraSelect = `, p."name" as "companyName", p."oneLiner", p."stage", p."industry"`; // Expose p.name as companyName
-    else if (role === "space") extraSelect = `, p."companyName", p."providerType", p."address"`;
+    if (role === "freelancer") extraSelect = `, p."headline", p."skills", p."hourlyRate", p."bio"`;
+    else if (role === "investor") extraSelect = `, p."firmName", p."investorType", p."sectors", p."thesisNote" as "bio"`;
+    else if (role === "startup") extraSelect = `, p."name" as "companyName", p."oneLiner", p."stage", p."industry", p."website"`; // Expose p.name as companyName
+    else if (role === "space") extraSelect = `, p."companyName", p."providerType", p."address", p."description"`;
 
     // Haversine calculation part
     // If lat/lng are null, distance will be null

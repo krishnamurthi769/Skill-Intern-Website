@@ -8,8 +8,8 @@ import { Warehouse, Link as LinkIcon, MapPin, Layers, DollarSign } from "lucide-
 import { Badge } from "@/components/ui/badge"
 import { ConnectionRequestModal } from "@/components/connections/ConnectionRequestModal"
 
-export default function PublicProviderProfilePage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+export default function PublicProviderProfilePage({ params }: { params: { id: string } }) {
+    const { id } = params;
     const [isLoading, setIsLoading] = useState(true)
     const [provider, setProvider] = useState<any>(null)
     const [error, setError] = useState(false)

@@ -8,8 +8,8 @@ import { Briefcase, Link as LinkIcon, MapPin, Building, Banknote } from "lucide-
 import { Badge } from "@/components/ui/badge"
 import { ConnectionRequestModal } from "@/components/connections/ConnectionRequestModal"
 
-export default function PublicInvestorProfilePage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+export default function PublicInvestorProfilePage({ params }: { params: { id: string } }) {
+    const { id } = params;
     const [isLoading, setIsLoading] = useState(true)
     const [investor, setInvestor] = useState<any>(null)
     const [error, setError] = useState(false)

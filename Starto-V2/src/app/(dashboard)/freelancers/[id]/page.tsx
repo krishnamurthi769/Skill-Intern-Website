@@ -9,8 +9,8 @@ import { RequestConnectionButton } from "@/components/connections/RequestConnect
 
 // ... imports ...
 
-export default function PublicFreelancerProfilePage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+export default function PublicFreelancerProfilePage({ params }: { params: { id: string } }) {
+    const { id } = params;
     const [isLoading, setIsLoading] = useState(true)
     const [freelancer, setFreelancer] = useState<any>(null)
     const [error, setError] = useState(false)

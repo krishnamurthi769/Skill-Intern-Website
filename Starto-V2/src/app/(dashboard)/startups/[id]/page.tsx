@@ -14,8 +14,8 @@ import { RequestConnectionButton } from "@/components/connections/RequestConnect
 
 // ... imports ...
 
-export default function StartupProfilePage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+export default function StartupProfilePage({ params }: { params: { id: string } }) {
+    const { id } = params;
     const { data, isLoading, error } = useStartup(id);
     // Removed isConnectOpen state
 
@@ -61,7 +61,7 @@ export default function StartupProfilePage({ params }: { params: Promise<{ id: s
                             <div>
                                 <h1 className="text-3xl font-bold tracking-tight">{startup.name}</h1>
                                 <p className="text-muted-foreground flex items-center gap-2 mt-1">
-                                    Tech &bull; San Francisco, CA (Remote Friendly)
+                                    {startup.industry || "Tech"} &bull; {startup.city ? `${startup.city}${startup.state ? `, ${startup.state}` : ''}${startup.country ? `, ${startup.country}` : ''}` : "Remote / Global"}
                                 </p>
                             </div>
                         </div>
