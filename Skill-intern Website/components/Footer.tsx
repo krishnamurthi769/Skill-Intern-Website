@@ -10,12 +10,12 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     {/* Brand Column */}
                     <div className="space-y-6">
-                        <Link href="/" className="flex items-center gap-2">
-                            {/* Placeholder Logo - keeping existing logic */}
-                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
-                                S
-                            </div>
-                            <span className="text-xl font-bold text-white">Skill Intern</span>
+                        <Link href="/" className="inline-block relative h-12 w-48 mb-4">
+                            <img
+                                src="/images/logo_footer.png"
+                                alt="Inspire AI"
+                                className="h-full w-auto object-contain"
+                            />
                         </Link>
                         <p className="text-sm leading-relaxed text-gray-400">
                             Transforming careers through industry-expert mentorship, hands-on projects, and guaranteed placement support. Join the future of tech education.
@@ -66,23 +66,7 @@ export default function Footer() {
 
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-6 text-xs md:text-sm">
-                    <div className="text-center md:text-left text-gray-500">
-                        © 2025 Skill Intern. All rights reserved. || Developed by Sasikumar
-                    </div>
-                    <div className="flex flex-wrap justify-center gap-8 text-center md:text-left">
-                        <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors max-w-xs">
-                            <MapPin className="w-4 h-4 flex-shrink-0" />
-                            <span>VIDHYAPEET SKILL INTERN PRIVATE LIMITED, Third Floor, Flat No. 434, J R Arcade, 17th Cross, 19th Main, Sector–4, HSR Layout, Bengaluru – 560102</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-                            <Phone className="w-4 h-4 flex-shrink-0" />
-                            <span>+91 8248670255</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-                            <Mail className="w-4 h-4 flex-shrink-0" />
-                            <span>Operation@skillintern.in</span>
-                        </div>
-                    </div>
+                    {/* Content removed as per request */}
                 </div>
             </div>
         </footer>
