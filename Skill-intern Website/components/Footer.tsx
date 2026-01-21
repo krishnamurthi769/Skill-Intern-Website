@@ -45,8 +45,8 @@ export default function Footer() {
                         <ul className="space-y-4 text-sm">
                             <FooterLink href="/about">About Us</FooterLink>
                             <FooterLink href="/certificate">Certificate Verification</FooterLink>
-                            <FooterLink href="#">Reviews</FooterLink>
-                            <FooterLink href="#">Disclaimer</FooterLink>
+                            <FooterLink href="/#reviews">Reviews</FooterLink>
+                            <FooterLink href="/disclaimer">Disclaimer</FooterLink>
                             <FooterLink href="/contact">Contact</FooterLink>
                         </ul>
                     </div>
@@ -56,10 +56,10 @@ export default function Footer() {
                         <h3 className="text-white font-bold text-lg mb-6">Support</h3>
                         <ul className="space-y-4 text-sm">
                             <FooterLink href="#">Help Center</FooterLink>
-                            <FooterLink href="#">Privacy Policy</FooterLink>
-                            <FooterLink href="#">Terms of Service</FooterLink>
-                            <FooterLink href="#">Refund Policy</FooterLink>
-                            <FooterLink href="#">Cookie Policy</FooterLink>
+                            <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+                            <FooterLink href="/terms-of-service">Terms of Service</FooterLink>
+                            <FooterLink href="/refund-policy">Refund Policy</FooterLink>
+                            <FooterLink href="/cookie-policy">Cookie Policy</FooterLink>
                         </ul>
                     </div>
                 </div>
