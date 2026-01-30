@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import { LimitReachedModal } from "@/components/explore/LimitReachedModal";
 
 const libraries: "places"[] = ["places"];
 
-export default function ExplorePage() {
+function ExploreContent() {
 
     const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
     const { isLoaded } = useJsApiLoader({
@@ -442,4 +442,12 @@ export default function ExplorePage() {
             <LimitReachedModal open={showLimitModal} />
         </div >
     );
+}
+
+export default function ExplorePage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-black text-white">Loading Intelligence...</div>}>
+            <ExploreContent />
+        </Suspense>
+    )
 }

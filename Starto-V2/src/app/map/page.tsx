@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import MapContainer from "@/components/map/MapContainer";
 import { startoMapStyle } from "@/components/map/startoMapStyle";
 import { Input } from "@/components/ui/input";
@@ -42,7 +42,7 @@ type Helper = {
     // ... profiles
 };
 
-export default function V2MapPage() {
+function MapContent() {
     const searchParams = useSearchParams();
     const initialQuery = searchParams.get("q") || "";
     const containerRef = useRef(null);
@@ -281,6 +281,14 @@ export default function V2MapPage() {
 
         </div>
     );
+}
+
+export default function V2MapPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center h-screen bg-[#050505] text-white">Loading Map...</div>}>
+            <MapContent />
+        </Suspense>
+    )
 }
 
 function FilterBadge({ label, active }: { label: string, active?: boolean }) {
